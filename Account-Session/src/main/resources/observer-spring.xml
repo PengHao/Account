@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="eventObserverCenter" class="com.wolfpeng.session.observer.EventObserverCenter">
+    </bean>
+
+    <bean id="pointChangeObserver" class="com.wolfpeng.session.observer.impl.Event1Observer">
+        <property name="event" value="com.wolfpeng.session.observer.event.Protocol1"/>
+    </bean>
+
+    <bean id="gradeChangeObserver" class="com.wolfpeng.session.observer.impl.Event2Observer">
+        <property name="event" value="com.wolfpeng.session.observer.event.Protocol2"/>
+    </bean>
+
+    <bean id="memberJoinObserver" class="com.wolfpeng.session.observer.impl.Event3Observer">
+        <property name="event" value="com.wolfpeng.session.observer.event.Protocol3"/>
+    </bean>
+</beans>
