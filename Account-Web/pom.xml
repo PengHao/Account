@@ -11,7 +11,7 @@
   <artifactId>Account-Web</artifactId>
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>Web Maven Webapp</name>
+  <name>Account-Web</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
