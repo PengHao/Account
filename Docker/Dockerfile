@@ -1,4 +1,4 @@
-FROM wolfpeng/tomcat7:1.0.0
+FROM registry.wolfpeng.com:5000/wolfpeng/tomcat7:1.0.0
 MAINTAINER WolfPeng penghao345@gmail.com
 
 ENV APP_NAME=account
