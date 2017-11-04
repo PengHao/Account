@@ -45,7 +45,7 @@ public class Index implements ApplicationContextAware {
         eventObserverCenter.activeEvent(protocol2);
         eventObserverCenter.activeEvent(protocol3);
 
-        request.setAttribute("date", "handle index request");
+        request.setAttribute("date", "handle index request new");
         Context<Map<String, Object>> context = new Context<>();
 
         Protocol1Pipeline pipeline = applicationContext.getBean(Protocol1Pipeline.class, context);
