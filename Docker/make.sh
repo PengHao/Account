@@ -3,6 +3,6 @@ REGISTRY=registry.wolfpeng.com:5000
 echo $1
 timestamp=`date +%s`
 echo $timestamp
-docker build ${basepath} -t wolfpeng/$1:${timestamp} .
+docker build -t wolfpeng/$1:${timestamp} ${basepath}
 docker tag wolfpeng/$1:${timestamp} ${REGISTRY}/wolfpeng/$1:latest
 docker push ${REGISTRY}/wolfpeng/$1:latest
