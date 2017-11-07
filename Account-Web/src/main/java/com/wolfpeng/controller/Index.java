@@ -11,7 +11,7 @@ import com.wolfpeng.session.observer.EventObserverCenter;
 import com.wolfpeng.session.observer.event.Protocol1;
 import com.wolfpeng.session.observer.event.Protocol2;
 import com.wolfpeng.session.observer.event.Protocol3;
-import com.wolfpeng.session.controll.UserService;
+import com.wolfpeng.session.controll.AccountService;
 import com.wolfpeng.session.pipeline.Context;
 import com.wolfpeng.session.pipeline.Protocol1Pipeline;
 import org.springframework.beans.BeansException;
@@ -58,13 +58,13 @@ public class Index implements ApplicationContextAware {
 
     }
 
-    UserService userService;
+    AccountService accountService;
 
     @RequestMapping(value = "/login")
     public String login(HttpServletRequest request, HttpServletResponse response) {
         String userName = request.getParameter("userName");
         String passWord = request.getParameter("passwd");
-        userService.login(userName, passWord);
+        accountService.login(userName, passWord);
         Cookie cookie = new Cookie("session_token", "session_token");
         response.addCookie(cookie);
         return "index";

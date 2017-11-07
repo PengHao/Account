@@ -10,4 +10,8 @@ public class UserDAO {
     public UserDO queryUserDO(String userName){
         return null;
     }
+
+    public UserDO insert(String userName, String password) {
+        return null;
+    }
 }
