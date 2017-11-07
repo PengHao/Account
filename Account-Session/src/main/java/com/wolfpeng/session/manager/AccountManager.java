@@ -2,7 +2,7 @@ package com.wolfpeng.session.manager;
 
 import javax.security.auth.login.AccountException;
 
-import com.wolfpeng.session.moudle.RoomDO;
+import com.wolfpeng.session.moudle.LobbyDO;
 import com.wolfpeng.session.moudle.SessionDO;
 
 /**
@@ -13,5 +13,5 @@ public interface AccountManager {
     SessionDO login(String userName, String password) throws AccountException;
     Boolean regist(String userName, String password) throws AccountException;
     Boolean logout(SessionDO sessionDO) throws AccountException;
-    RoomDO enter(SessionDO sessionDO) throws AccountException;
+    LobbyDO enter(SessionDO sessionDO) throws AccountException;
 }

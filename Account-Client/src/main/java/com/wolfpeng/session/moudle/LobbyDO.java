@@ -11,7 +11,7 @@ import lombok.Data;
  * Copyright © 2017年 Alibaba. All rights reserved.
  */
 @Data
-public class RoomDO implements Serializable {
+public class LobbyDO implements Serializable {
     private static final long serialVersionUID = 5370263860915417985L;
     private String host;
     private Integer port;

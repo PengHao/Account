@@ -10,4 +10,7 @@ public class SessionDAO {
     public SessionDO refreshSessionDO(Long id) {
         return null;
     }
+    public SessionDO querySessionDO(Long id) {
+        return null;
+    }
 }

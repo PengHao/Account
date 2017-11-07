@@ -4,7 +4,7 @@ import javax.security.auth.login.AccountException;
 
 import com.wolfpeng.session.ResultDTO;
 import com.wolfpeng.session.manager.AccountManager;
-import com.wolfpeng.session.moudle.RoomDO;
+import com.wolfpeng.session.moudle.LobbyDO;
 import com.wolfpeng.session.moudle.SessionDO;
 
 /**
@@ -60,10 +60,10 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public ResultDTO<RoomDO> enterRoom(SessionDO sessionDO) {
-        ResultDTO<RoomDO> resultDTO = new ResultDTO<>();
+    public ResultDTO<LobbyDO> enterRoom(SessionDO sessionDO) {
+        ResultDTO<LobbyDO> resultDTO = new ResultDTO<>();
         try {
-            RoomDO rs = accountManager.enter(sessionDO);
+            LobbyDO rs = accountManager.enter(sessionDO);
             resultDTO.setSuccess(true);
             resultDTO.setResult(rs);
         } catch (AccountException e) {
