@@ -128,6 +128,7 @@ public class RequestProcess extends BaseProcess {
         try {
             session = sessionManager.bind(bindRequest.getUid(), ctx.channel());
             bindResponse.setSuccess(true);
+            session.play(1L);
         } catch (ProcessException e) {
             e.printStackTrace();
             bindResponse.setSuccess(false);
