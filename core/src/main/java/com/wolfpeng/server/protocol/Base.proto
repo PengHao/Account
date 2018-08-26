@@ -1,0 +1,65 @@
+
+syntax = "proto3";
+package server.protocol;
+option java_package = "com.wolfpeng.server.protocol";
+message Control {
+    enum Action {
+        PLAY = 0;
+        STOP = 1;
+        PUASE = 2;
+        VUP = 3;
+        VDOWN = 4;
+        NEXT = 5;
+        PRVE = 6;
+    }
+    Action corpus = 1;
+    string content = 2;
+}
+
+message MetaPicture {
+    int64 id = 1;
+    string path = 2;
+    bytes data = 3;
+}
+
+message Target {
+    int64 id = 1;
+    string path = 2;
+    string name = 3;
+    enum TargetType {
+        LEEF = 0;   //叶子结点
+        TREE = 1;   //树结点
+        HIDE = 2;   //隐藏节点
+    }
+    TargetType target_type = 4;
+    int64 parent_id = 5;     //父节点ID
+}
+
+message Device {
+    int64 id = 1;
+    string name = 2;
+    string password = 3;
+}
+
+message Metadata {
+    int64 id = 1;
+    int64 target_id = 2;     //target_id
+    int64 start = 3;        //开始时间点(针对cue)
+    int64 duration = 4;     //持续时间
+    string artist = 5;
+    string title = 6;
+    string ablum = 7;
+    string ablum_artist = 8;
+    string composer = 9;        //作曲
+    string date = 10;
+    string disc_number = 11;
+    string track_number = 12;
+    string copy_right = 13;
+    string genre = 14;  //类型
+    string genre_number = 15;
+    string organization = 16;
+    string comment = 17;
+    string performer = 18;
+    string mood = 19;
+    int64 picture_id = 20;
+}

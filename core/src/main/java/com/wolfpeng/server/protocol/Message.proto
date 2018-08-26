@@ -1,0 +1,17 @@
+
+syntax = "proto3";
+package server.protocol;
+option java_package = "com.wolfpeng.server.protocol";
+
+import "Notify.proto";
+import "Request.proto";
+import "Response.proto";
+
+
+message Message {
+    oneof Package {
+        Request request = 1;
+        Response response = 2;
+        Notify notify = 3;
+    }
+}

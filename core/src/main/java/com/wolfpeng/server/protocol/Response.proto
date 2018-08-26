@@ -1,0 +1,68 @@
+
+syntax = "proto3";
+package server.protocol;
+option java_package = "com.wolfpeng.server.protocol";
+
+import "Base.proto";
+
+message HeartBeatResponse {
+
+}
+
+message DefaultResponse {
+    string name = 1;
+}
+
+message LoginResponse {
+    int64 uid = 1;
+    string message = 2;
+}
+
+
+message PlayResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message PlayableDeviceResponse {
+    repeated Device devices = 1;
+}
+
+message TargetResponse {
+    repeated Target targets = 1;
+    int64 target_id = 2;
+}
+
+message CoverResponse {
+    bytes picture_data = 1;
+    int64 picture_id = 2;
+}
+
+message MetadataResponse {
+    int64 target_id = 1;
+    repeated Metadata metadatas = 2;
+}
+
+message DataConnectionResponse {
+    string result = 1;
+}
+
+message BindResponse {
+    bool success = 1;
+    string msg = 2;
+}
+
+message Response {
+    oneof Package {
+        HeartBeatResponse heart_beat_response = 1;
+        DefaultResponse default_response = 2;
+        TargetResponse target_response = 3;
+        LoginResponse login_response = 4;
+        DataConnectionResponse data_connection_response = 5;
+        BindResponse bind_response = 6;
+        PlayableDeviceResponse playable_device_response = 7;
+        PlayResponse play_response = 8;
+        MetadataResponse metadata_response = 9;
+        CoverResponse cover_response = 10;
+    }
+}

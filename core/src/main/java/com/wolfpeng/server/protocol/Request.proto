@@ -1,0 +1,65 @@
+
+syntax = "proto3";
+package server.protocol;
+option java_package = "com.wolfpeng.server.protocol";
+
+
+import "Base.proto";
+message TargetRequest {
+    int64 target_id = 1;
+}
+
+message PlayRequest {
+    int64 metadata_id = 1;
+    int64 device_id = 2;
+}
+
+message ControlRequest {
+    Control control = 1;
+    int64   device_id = 2;
+}
+
+message MetadataRequest {
+    int64 target_id = 1;
+}
+
+message CoverRequest {
+    int64 picture_id = 1;
+}
+
+message HeartBeatRequest {
+
+}
+
+message LoginRequest {
+    string user_name = 1;
+    string pass_word = 2;
+    bool play_able = 3;
+}
+
+message BindRequest {
+    int64 uid = 1;
+}
+
+message DataConnectionRequest {
+    string sessionId = 1;
+}
+
+message PlayableDeviceRequest {
+
+}
+
+message Request {
+    oneof Package {
+        HeartBeatRequest heart_beat_request = 1;
+        TargetRequest target_request = 2;
+        PlayRequest play_request = 3;
+        LoginRequest login_request = 4;
+        BindRequest bind_request = 5;
+        PlayableDeviceRequest playable_device_request = 6;
+        ControlRequest control_request = 7;
+        MetadataRequest metadata_request = 8;
+        CoverRequest cover_request = 9;
+
+    }
+}
