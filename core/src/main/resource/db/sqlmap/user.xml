@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wolfpeng.dao.UserDAO">
+    <resultMap type="UserDO" id="userDOMap">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="pwd" column="pwd" />
+        <result property="createTime" column="create_time" />
+        <result property="modifyTime" column="modify_time" />
+        <result property="lastLoginTime" column="last_login_time" />
+        <result property="status" column="status" />
+    </resultMap>
+
+    <select id="queryUserDO"
+            parameterType="java.lang.String"
+            resultMap="userDOMap">
+        select * from user where name = #{0} AND pwd = #{1}
+    </select>
+
+    <select id="queryUserDOById"
+            parameterType="java.lang.Long"
+            resultMap="userDOMap">
+        select * from user where id = #{0}
+    </select>
+
+    <insert
+            id="insertUserDO"
+            parameterType="com.wolfpeng.model.UserDO"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+      insert into user (name, pwd, create_time, modify_time, status) values (#{name}, #{pwd}, now(), now(), 0)
+    </insert>
+
+    <update
+            id="deleteUserDO"
+            parameterType="com.wolfpeng.model.UserDO"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+
+        update user set status = '-1'
+        , modify_time = now()
+        where id = #{id}
+    </update>
+
+
+    <update
+            id="updateUserDO"
+            parameterType="com.wolfpeng.model.UserDO"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+
+        update user set
+        modify_time = now()
+        <if test="name != null">, name = #{name}</if>
+        <if test="pwd != null">, pwd = #{pwd}</if>
+        <if test="status != null">, status = #{status}</if>
+        <if test="lastLoginTime != null">, last_login_time = #{lastLoginTime}</if>
+        where id = #{id}
+        <if test="name != null">
+            AND name = #{name}
+        </if>
+        <if test="pwd != null">
+            AND pwd = #{pwd}
+        </if>
+    </update>
+
+</mapper>
