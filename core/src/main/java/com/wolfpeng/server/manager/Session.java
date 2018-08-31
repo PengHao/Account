@@ -1,10 +1,16 @@
 package com.wolfpeng.server.manager;
 
+import javax.annotation.Resource;
 import javax.sound.sampled.AudioFormat;
 
 import com.google.protobuf.ByteString;
+import com.wolfpeng.dao.FileDAO;
+import com.wolfpeng.dao.MetadataDAO;
+import com.wolfpeng.exception.MediaServerException;
 import com.wolfpeng.media.Player;
 import com.wolfpeng.media.PlayerCallBack;
+import com.wolfpeng.model.FileDO;
+import com.wolfpeng.model.MetadataDO;
 import com.wolfpeng.model.UserDO;
 import com.wolfpeng.server.protocol.MessageOuterClass.Message;
 import com.wolfpeng.server.protocol.NotifyOuterClass;
@@ -23,7 +29,8 @@ public class Session {
     Channel controllChannel;
     Channel musicChannel;
     UserDO userDO;
-    Player player = new Player();
+    Player player = new Player();;
+    Boolean playAble = false;
 
     public void logout() {
         player.stop();
@@ -41,12 +48,28 @@ public class Session {
         musicChannel.writeAndFlush(responseMessage);
     }
 
-    public void play(Long metaId) {
+    @Resource
+    MetadataDAO metadataDAO;
 
-        //send metaData
+    @Resource
+    FileDAO fileDAO;
 
+    public void play(Long metaId) throws MediaServerException {
+        if (!playAble) {
+            throw MediaServerException.builder().errorMessage("Device is not playable").build();
+        }
 
-        String filePath = "/Users/penghao/1.mp3";
+        MetadataDO metadataDO = metadataDAO.queryMetadataDO(metaId);
+        if (metadataDO == null) {
+            throw MediaServerException.builder().errorMessage(String.format("metadata not found, metaId = %d", metaId)).build();
+        }
+        Long targetId = metadataDO.getTargetId();
+        FileDO fileDO = fileDAO.queryFileDO(targetId);
+        if (fileDO == null) {
+            throw MediaServerException.builder().errorMessage(String.format("file not found, metaId = %d", metaId)).build();
+        }
+
+        String filePath = fileDO.getPath();
         player.play(filePath, new PlayerCallBack() {
             @Override
             public void onReadData(byte[] data, long len) {

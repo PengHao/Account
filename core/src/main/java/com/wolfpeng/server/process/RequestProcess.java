@@ -3,6 +3,7 @@ package com.wolfpeng.server.process;
 
 import javax.annotation.Resource;
 
+import com.wolfpeng.exception.MediaServerException;
 import com.wolfpeng.exception.ProcessException;
 import com.wolfpeng.server.manager.Session;
 import com.wolfpeng.server.manager.SessionManager;
@@ -51,11 +52,13 @@ public class RequestProcess extends BaseProcess {
         LoginRequest loginRequest = request.getLoginRequest();
         String name = loginRequest.getUserName();
         String pwd = loginRequest.getPassWord();
+        Boolean playAble = loginRequest.getPlayAble();
         Channel channel = ctx.channel();
         Session session = null;
         LoginResponse.Builder loginResponse = LoginResponse.newBuilder();
         try {
             session = sessionManager.login(name, pwd, channel);
+            session.setPlayAble(playAble);
             loginResponse.setUid(session.getUserDO().getId());
         } catch (ProcessException e) {
             loginResponse.setUid(-1);
@@ -70,6 +73,8 @@ public class RequestProcess extends BaseProcess {
     @PathMethod(name = "TARGET_REQUEST")
     public void onTarget(Request request, ChannelHandlerContext ctx) {
         TargetRequest targetRequest = request.getTargetRequest();
+        long targetID = targetRequest.getTargetId();
+
 
     }
 
@@ -97,22 +102,27 @@ public class RequestProcess extends BaseProcess {
         Session deviceSession = sessionManager.getSession(deviceId);
         if (deviceSession == null
             || deviceSession.getControllChannel() == null
-            || deviceSession.getMusicChannel() == null) {
+            || deviceSession.getMusicChannel() == null
+            || deviceSession.getPlayAble() == false) {
             LOGGER.error("device not found, deviceId = {}", deviceId);
             playResponse.setSuccess(false);
             playResponse.setMessage("device not found");
-
         } else {
-            if (session == deviceSession) {
-                //play
-                session.play(metaId);
-            } else {
-                Control.Builder control = Control.newBuilder()
-                    .setCorpus(Action.PLAY)
-                    .setContent(String.format("%d", metaId));
-                deviceSession.sendNotify(Notify.newBuilder().setControl(control));
+            try {
+                if (session == deviceSession) {
+                    //play
+                    session.play(metaId);
+                } else {
+                    Control.Builder control = Control.newBuilder()
+                        .setCorpus(Action.PLAY)
+                        .setContent(String.format("%d", metaId));
+                    deviceSession.sendNotify(Notify.newBuilder().setControl(control));
+                }
+                playResponse.setSuccess(true);
+            } catch (MediaServerException e) {
+                LOGGER.error("onPlay error, msg = {}, e = {}", e.getErrorMessage(), e);
             }
-            playResponse.setSuccess(true);
+
         }
         Response.Builder response = Response.newBuilder().setPlayResponse(playResponse);
         session.sendResponse(response);
@@ -128,7 +138,6 @@ public class RequestProcess extends BaseProcess {
         try {
             session = sessionManager.bind(bindRequest.getUid(), ctx.channel());
             bindResponse.setSuccess(true);
-            session.play(1L);
         } catch (ProcessException e) {
             e.printStackTrace();
             bindResponse.setSuccess(false);
@@ -143,13 +152,14 @@ public class RequestProcess extends BaseProcess {
         PlayableDeviceRequest playableDeviceRequest = request.getPlayableDeviceRequest();
         PlayableDeviceResponse.Builder builder = PlayableDeviceResponse.newBuilder();
         Session session = sessionManager.getSession(ctx.channel());
-
         sessionManager.getPlayableSessions().forEach(e -> {
-            Device device = Device.newBuilder()
-                .setId(e.getUserDO().getId())
-                .setName(e.getUserDO().getName())
-                .build();
-            builder.addDevices(device);
+            if (e.getPlayAble()) {
+                Device device = Device.newBuilder()
+                    .setId(e.getUserDO().getId())
+                    .setName(e.getUserDO().getName())
+                    .build();
+                builder.addDevices(device);
+            }
         });
 
         Response.Builder response = Response.newBuilder().setPlayableDeviceResponse(builder);

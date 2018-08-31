@@ -10,6 +10,7 @@ import com.wolfpeng.dao.MetadataDAO;
 import com.wolfpeng.model.CoverDO;
 import com.wolfpeng.model.FileDO;
 import com.wolfpeng.model.MetadataDO;
+import com.wolfpeng.model.SystemConfigDO;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -27,9 +28,11 @@ import org.springframework.stereotype.Service;
 public class Libaray {
     private static final Logger LOGGER = LoggerFactory.getLogger(Libaray.class);
 
-    static String[] TYPES = {".flac", ".cue", ".wav", ".mp3"};
-    public void scan(String path ) {
-        File file = new File(path);
+
+    SystemConfigDO systemConfigDO = SystemConfigDO.defaultSystemConfigDO;
+
+    public void scan() {
+        File file = new File(systemConfigDO.getLibarayPath());
         if (file.exists()) {
             readFile(file, null);
         } else {
@@ -68,8 +71,8 @@ public class Libaray {
 
         String fileTyle = absolutePath.substring(idx, absolutePath.length());
         Boolean isMatch = false;
-        for ( String type : TYPES) {
-            if (type.equals(fileTyle)) {
+        for ( String type : systemConfigDO.getFileTypes().split(",")) {
+            if (type.trim().equals(fileTyle)) {
                 isMatch = true;
                 break;
             }

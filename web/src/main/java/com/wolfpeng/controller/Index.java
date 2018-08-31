@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.wolfpeng.exception.ProcessException;
+import com.wolfpeng.media.Libaray;
+import com.wolfpeng.server.manager.SessionManager;
 import com.wolfpeng.server.netty.MyServer;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +26,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller("HomeIndex")
 @RequestMapping("/home")
-public class Index implements ApplicationContextAware {
+public class Index {
+
+    @Resource
+    SessionManager sessionManagerl;
+
+    @Resource(name = "mediaServer")
+    MyServer mediaServer;
+
+    @Resource(name = "controllServer")
+    MyServer controllServer;
+
+    @Resource
+    Libaray libaray;
 
     @RequestMapping(value = "/")
     public String index(HttpServletRequest request, HttpServletResponse response) {
@@ -35,27 +50,30 @@ public class Index implements ApplicationContextAware {
         request.setAttribute("beSale", beSales);
         return "home";
     }
-    @RequestMapping(value = "/login")
-    public String login(HttpServletRequest request, HttpServletResponse response) {
-        String userName = request.getParameter("userName");
-        String passWord = request.getParameter("passwd");
-        Cookie cookie = new Cookie("session_token", "session_token");
-        response.addCookie(cookie);
+
+    @RequestMapping(value = "/scan")
+    public String scan(HttpServletRequest request, HttpServletResponse response) {
+        libaray.scan();
         return "index";
     }
 
-    ApplicationContext applicationContext;
+    @RequestMapping(value = "/register")
+    public String login(HttpServletRequest request, HttpServletResponse response) {
+        String userName = request.getParameter("userName");
+        String passWord = request.getParameter("passwd");
+        try {
+            sessionManagerl.register(userName, passWord);
+        } catch (ProcessException e) {
 
-    @Resource(name = "mediaServer")
-    MyServer mediaServer;
+        }
+        return "index";
+    }
 
-    @Resource(name = "controllServer")
-    MyServer controllServer;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    @RequestMapping(value = "/start")
+    public String start(HttpServletRequest request, HttpServletResponse response) {
         mediaServer.run();
         controllServer.run();
+        return "index";
     }
+
 }
