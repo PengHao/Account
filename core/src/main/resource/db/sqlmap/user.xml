@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.wolfpeng.dao.UserDAO">
-    <resultMap type="UserDO" id="userDOMap">
+    <resultMap type="com.wolfpeng.model.UserDO" id="userDOMap">
         <id property="id" column="id" />
         <result property="name" column="name" />
         <result property="pwd" column="pwd" />
@@ -28,6 +28,8 @@
 
     <insert
             id="insertUserDO"
+            keyProperty="id"
+            useGeneratedKeys="true"
             parameterType="com.wolfpeng.model.UserDO"
             flushCache="true"
             statementType="PREPARED"

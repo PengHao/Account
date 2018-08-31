@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyServer implements ApplicationContextAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyServer.class);
+
+
     @Setter
     Integer port;
 
@@ -41,9 +43,11 @@ public class MyServer implements ApplicationContextAware {
             start();
         });
         thread.start();
+
     }
 
     void start() {
+
         try {
             serverBootstrap.group(boss, worker)
                 .channel(NioServerSocketChannel.class)

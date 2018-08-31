@@ -9,7 +9,7 @@ import com.wolfpeng.model.UserDO;
 public interface UserDAO {
     UserDO queryUserDO(String name, String pwd);
 
-    void inserUserDO(UserDO userDO);
+    void insertUserDO(UserDO userDO);
 
     void updateUserDO(UserDO userDO);
 

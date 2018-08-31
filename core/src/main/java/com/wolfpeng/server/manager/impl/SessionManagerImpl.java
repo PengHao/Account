@@ -66,7 +66,7 @@ public class SessionManagerImpl implements SessionManager {
         UserDO userDO = new UserDO();
         userDO.setName(name);
         userDO.setPwd(pwd);
-        userDAO.inserUserDO(userDO);
+        userDAO.insertUserDO(userDO);
     }
 
     @Override

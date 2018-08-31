@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wolfpeng.dao.CoverDAO">
+    <resultMap type="com.wolfpeng.model.CoverDO" id="coverDOMap">
+        <id property="id" column="id" />
+        <result property="createTime" column="create_time" />
+        <result property="modifyTime" column="modify_time" />
+        <result property="status" column="status" />
+
+        <result property="path" column="path" />
+        <result property="data" column="data" />
+    </resultMap>
+
+    <select id="queryCoverDO"
+            parameterType="java.lang.Long"
+            resultMap="coverDOMap">
+        select * from cover where id = #{0}
+    </select>
+
+    <insert
+            id="insertCoverDO"
+            keyProperty="id"
+            useGeneratedKeys="true"
+            parameterType="com.wolfpeng.model.CoverDO"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+      insert into cover (create_time, modify_time, status, path, data) values (now(), now(), 0, #{path}, #{data})
+    </insert>
+
+    <update
+            id="deleteCoverDO"
+            parameterType="com.wolfpeng.model.CoverDO"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+
+        update cover set status = '-1'
+        , modify_time = now()
+        where id = #{id}
+    </update>
+
+
+    <update
+            id="updateCoverDO"
+            parameterType="com.wolfpeng.model.CoverDO"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+
+        update cover set
+        modify_time = now()
+        <if test="status != null">, status = #{status}</if>
+        <if test="data != null">, data = #{data}</if>
+        <if test="path != null">, path = #{path}</if>
+        where id = #{id}
+    </update>
+
+</mapper>

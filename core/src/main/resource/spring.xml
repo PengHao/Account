@@ -9,4 +9,5 @@
     <bean id="controllServer" class="com.wolfpeng.server.netty.MyServer">
         <property name="port" value="28081" />
     </bean>
+    <import resource="JDBC.xml"/>
 </beans>

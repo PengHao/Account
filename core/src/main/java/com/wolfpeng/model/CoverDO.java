@@ -17,6 +17,9 @@ public class CoverDO extends BaseDO {
 
 CREATE TABLE `cover` (
      `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+     `create_time` datetime NOT NULL COMMENT '创建时间',
+     `modify_time` datetime NOT NULL COMMENT '修改时间',
+     `status` tinyint NOT NULL COMMENT '-1:删除， 1:有效',
     `data` mediumblob,
     `path` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 

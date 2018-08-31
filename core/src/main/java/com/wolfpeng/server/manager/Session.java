@@ -46,7 +46,7 @@ public class Session {
         //send metaData
 
 
-        String filePath = "/Users/penghao/1.wav";
+        String filePath = "/Users/penghao/1.mp3";
         player.play(filePath, new PlayerCallBack() {
             @Override
             public void onReadData(byte[] data, long len) {

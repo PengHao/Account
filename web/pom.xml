@@ -69,6 +69,16 @@
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.jflac</groupId>
+      <artifactId>jflac-codec</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org</groupId>
+      <artifactId>jaudiotagger</artifactId>
+    </dependency>
   </dependencies>
 
   <properties>

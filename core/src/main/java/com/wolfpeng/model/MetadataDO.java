@@ -25,7 +25,7 @@ public class MetadataDO extends BaseDO {
     String ablumArtist;
     //作曲
     String composer;
-    Date date;
+    String date;
 
     String discNumber;
     String trackNumber;
@@ -37,7 +37,7 @@ public class MetadataDO extends BaseDO {
     String comment;
     String performer;
     String mood;
-    Long pictureId;
+    Long coverId;
 
 }
 
@@ -47,29 +47,30 @@ public class MetadataDO extends BaseDO {
  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
  `create_time` datetime NOT NULL COMMENT '创建时间',
  `modify_time` datetime NOT NULL COMMENT '修改时间',
+ `status` tinyint NOT NULL COMMENT '-1:删除， 1:有效',
 
- `file_id` bigint unsigned NOT NULL COMMENT '文件id',
+ `target_id` bigint unsigned NOT NULL COMMENT '文件id',
  `start_time` int(11) unsigned COMMENT 'cue开始时间点',
  `duration` int(11) unsigned COMMENT '持续时间',
- `artist` varchar(128) NOT NULL COMMENT 'artist',
- `title` varchar(128) NOT NULL COMMENT 'title',
- `ablum` varchar(128) NOT NULL COMMENT 'ablum',
- `ablum_artist` varchar(128) NOT NULL COMMENT 'ablum_artist',
- `composer` varchar(128) NOT NULL COMMENT 'composer',
- `date` datetime NOT NULL COMMENT 'date',
- `disc_number` varchar(128) NOT NULL COMMENT 'disc_number',
- `track_number` varchar(128) NOT NULL COMMENT 'track_number',
- `copy_right` varchar(128) NOT NULL COMMENT 'copy_right',
- `genre` varchar(128) NOT NULL COMMENT 'genre',
- `genre_number` varchar(128) NOT NULL COMMENT 'genre_number',
- `organization` varchar(128) NOT NULL COMMENT 'organization',
- `comment` varchar(128) NOT NULL COMMENT 'comment',
- `performer` varchar(128) NOT NULL COMMENT 'performer',
- `mood` varchar(128) NOT NULL COMMENT 'mood',
- `cover_id` varchar(128) NOT NULL COMMENT 'cover_id',
+ `artist` varchar(128) COMMENT 'artist',
+ `title` varchar(128) COMMENT 'title',
+ `ablum` varchar(128) COMMENT 'ablum',
+ `ablum_artist` varchar(128) COMMENT 'ablum_artist',
+ `composer` varchar(128) COMMENT 'composer',
+ `date` varchar(128) COMMENT 'date',
+ `disc_number` varchar(128) COMMENT 'disc_number',
+ `track_number` varchar(128) COMMENT 'track_number',
+ `copy_right` varchar(128) COMMENT 'copy_right',
+ `genre` varchar(128) COMMENT 'genre',
+ `genre_number` varchar(128) COMMENT 'genre_number',
+ `organization` varchar(128) COMMENT 'organization',
+ `comment` text(2048) COMMENT 'comment',
+ `performer` varchar(128) COMMENT 'performer',
+ `mood` varchar(128) COMMENT 'mood',
+ `cover_id` varchar(128) COMMENT 'cover_id',
 
  PRIMARY KEY (`id`),
- KEY `file_id` (`file_id`),
+ KEY `target_id` (`target_id`),
  KEY `artist` (`artist`),
  KEY `title` (`title`),
  KEY `ablum` (`ablum`),

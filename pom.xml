@@ -154,6 +154,13 @@
         <version>3.3.0</version>
       </dependency>
 
+      <!-- https://mvnrepository.com/artifact/org/jaudiotagger -->
+      <dependency>
+        <groupId>org</groupId>
+        <artifactId>jaudiotagger</artifactId>
+        <version>2.0.3</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
