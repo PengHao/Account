@@ -19,6 +19,7 @@ import org.jaudiotagger.tag.datatype.Artwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * Created by penghao on 2018/8/31.
@@ -29,7 +30,17 @@ public class Libaray {
     private static final Logger LOGGER = LoggerFactory.getLogger(Libaray.class);
 
 
+    @Resource
+    FileDAO fileDao;
+
+    @Resource
+    CoverDAO coverDAO;
+
+    @Resource
+    MetadataDAO metadataDAO;
+
     SystemConfigDO systemConfigDO = SystemConfigDO.defaultSystemConfigDO;
+
 
     public void scan() {
         File file = new File(systemConfigDO.getLibarayPath());
@@ -81,11 +92,12 @@ public class Libaray {
             return;
         }
 
+        MetadataDO metadataDO = new MetadataDO();
+        metadataDO.setTargetId(fileDO.getId());
         try {
             AudioFile f = AudioFileIO.read(file);
             Tag tag = f.getTag();
 
-            MetadataDO metadataDO = new MetadataDO();
             metadataDO.setArtist(tag.getFirst(FieldKey.ARTIST));
             metadataDO.setTitle(tag.getFirst(FieldKey.TITLE));
             metadataDO.setAblum(tag.getFirst(FieldKey.ALBUM));
@@ -104,28 +116,20 @@ public class Libaray {
             //metadataDO.setDuration(f.getAudioHeader().getTrackLength());
 
             Artwork artwork = tag.getFirstArtwork();
-            CoverDO coverDO = new CoverDO();
-            coverDO.setData(artwork.getBinaryData());
-            coverDO.setPath(artwork.getImageUrl());
-            coverDAO.insertCoverDO(coverDO);
-
-            metadataDO.setCoverId(coverDO.getId());
-            metadataDO.setTargetId(fileDO.getId());
-
-            metadataDAO.insertMetadataDO(metadataDO);
+            if (artwork != null) {
+                CoverDO coverDO = new CoverDO();
+                coverDO.setData(artwork.getBinaryData());
+                coverDO.setPath(artwork.getImageUrl());
+                coverDAO.insertCoverDO(coverDO);
+                metadataDO.setCoverId(coverDO.getId());
+            }
 
         } catch (Exception e) {
-            LOGGER.error("e = {}", e);
+            LOGGER.error("absolutePath = {}, e = {}", absolutePath, e);
         }
-        return;
+        if (StringUtils.isEmpty(metadataDO.getTitle())) {
+            metadataDO.setTitle(fileName);
+        }
+        metadataDAO.insertMetadataDO(metadataDO);
     }
-
-    @Resource
-    FileDAO fileDao;
-
-    @Resource
-    CoverDAO coverDAO;
-
-    @Resource
-    MetadataDAO metadataDAO;
 }

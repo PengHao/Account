@@ -1,5 +1,7 @@
 package com.wolfpeng.dao;
 
+import java.util.List;
+
 import com.wolfpeng.model.FileDO;
 
 /**
@@ -8,6 +10,12 @@ import com.wolfpeng.model.FileDO;
  */
 public interface FileDAO {
     FileDO queryFileDO(Long id);
+
+    List<FileDO> querySubFileDO(Long id);
+
+    List<FileDO> queryRootFileDO();
+
+
 
     void insertFileDO(FileDO fileDO);
 

@@ -2,6 +2,7 @@ package com.wolfpeng.model;
 
 import java.util.Date;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -67,7 +68,7 @@ public class MetadataDO extends BaseDO {
  `comment` text(2048) COMMENT 'comment',
  `performer` varchar(128) COMMENT 'performer',
  `mood` varchar(128) COMMENT 'mood',
- `cover_id` varchar(128) COMMENT 'cover_id',
+ `cover_id` bigint unsigned COMMENT 'cover_id',
 
  PRIMARY KEY (`id`),
  KEY `target_id` (`target_id`),

@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class SystemConfigDO {
-    public static SystemConfigDO defaultSystemConfigDO;
+    public static SystemConfigDO defaultSystemConfigDO = new SystemConfigDO();
 
     String libarayPath = "/Users/penghao/Music";
 

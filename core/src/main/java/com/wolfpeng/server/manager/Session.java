@@ -29,7 +29,7 @@ public class Session {
     Channel controllChannel;
     Channel musicChannel;
     UserDO userDO;
-    Player player = new Player();;
+    Player player = new Player();
     Boolean playAble = false;
 
     public void logout() {
@@ -54,22 +54,11 @@ public class Session {
     @Resource
     FileDAO fileDAO;
 
-    public void play(Long metaId) throws MediaServerException {
+    public void play(String filePath) throws MediaServerException {
         if (!playAble) {
             throw MediaServerException.builder().errorMessage("Device is not playable").build();
         }
 
-        MetadataDO metadataDO = metadataDAO.queryMetadataDO(metaId);
-        if (metadataDO == null) {
-            throw MediaServerException.builder().errorMessage(String.format("metadata not found, metaId = %d", metaId)).build();
-        }
-        Long targetId = metadataDO.getTargetId();
-        FileDO fileDO = fileDAO.queryFileDO(targetId);
-        if (fileDO == null) {
-            throw MediaServerException.builder().errorMessage(String.format("file not found, metaId = %d", metaId)).build();
-        }
-
-        String filePath = fileDO.getPath();
         player.play(filePath, new PlayerCallBack() {
             @Override
             public void onReadData(byte[] data, long len) {

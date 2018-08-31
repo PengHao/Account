@@ -10,6 +10,8 @@ public interface MetadataDAO {
 
     MetadataDO queryMetadataDO(Long id);
 
+    MetadataDO queryMetadataDOByTargetId(Long targetId);
+
     void insertMetadataDO(MetadataDO userDO);
 
     void updateMetadataDO(MetadataDO userDO);

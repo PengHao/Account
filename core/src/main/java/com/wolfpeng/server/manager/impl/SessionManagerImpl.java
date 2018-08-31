@@ -7,11 +7,19 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.wolfpeng.dao.FileDAO;
+import com.wolfpeng.dao.MetadataDAO;
 import com.wolfpeng.dao.UserDAO;
+import com.wolfpeng.exception.MediaServerException;
 import com.wolfpeng.exception.ProcessException;
+import com.wolfpeng.model.FileDO;
+import com.wolfpeng.model.MetadataDO;
 import com.wolfpeng.server.manager.Session;
 import com.wolfpeng.model.UserDO;
 import com.wolfpeng.server.manager.SessionManager;
+import com.wolfpeng.server.protocol.Base.Control;
+import com.wolfpeng.server.protocol.Base.Control.Action;
+import com.wolfpeng.server.protocol.NotifyOuterClass.Notify;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +39,12 @@ public class SessionManagerImpl implements SessionManager {
 
     @Resource
     UserDAO userDAO;
+
+    @Resource
+    FileDAO fileDAO;
+
+    @Resource
+    MetadataDAO metadataDAO;
 
     @Override
     public Session login(String name, String pwd, Channel channel) throws ProcessException {
@@ -115,4 +129,6 @@ public class SessionManagerImpl implements SessionManager {
         });
         return result;
     }
+
+
 }

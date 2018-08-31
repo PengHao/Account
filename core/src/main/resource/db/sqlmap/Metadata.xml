@@ -37,6 +37,12 @@
         select * from metadata where id = #{0}
     </select>
 
+    <select id="queryMetadataDOByTargetId"
+            parameterType="java.lang.Long"
+            resultMap="metadataDOMap">
+        select * from metadata where target_id = #{0}
+    </select>
+
     <insert
             id="insertMetadataDO"
             keyProperty="id"

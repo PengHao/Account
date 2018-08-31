@@ -22,6 +22,18 @@
         select * from file where id = #{0}
     </select>
 
+    <select id="querySubFileDO"
+            parameterType="java.lang.Long"
+            resultMap="fileDOMap">
+        select * from file where parent_id = #{0}
+    </select>
+
+    <select id="queryRootFileDO"
+            parameterType="java.lang.Long"
+            resultMap="fileDOMap">
+        select * from file where parent_id is NULL
+    </select>
+
     <insert
             id="insertFileDO"
             keyProperty="id"
