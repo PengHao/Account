@@ -139,4 +139,7 @@
         where id = #{id}
     </update>
 
+    <delete id="cleanMetadata" >
+        truncate TABLE metadata;
+    </delete>
 </mapper>

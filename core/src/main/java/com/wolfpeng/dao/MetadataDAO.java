@@ -17,4 +17,6 @@ public interface MetadataDAO {
     void updateMetadataDO(MetadataDO userDO);
 
     void deleteMetadataDO(MetadataDO userDO);
+
+    void cleanMetadata();
 }

@@ -59,4 +59,7 @@
         where id = #{id}
     </update>
 
+    <delete id="cleanCover" >
+        truncate TABLE cover;
+    </delete>
 </mapper>

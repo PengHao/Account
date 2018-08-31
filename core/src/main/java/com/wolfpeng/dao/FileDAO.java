@@ -22,4 +22,6 @@ public interface FileDAO {
     void updateFileDO(FileDO fileDO);
 
     void deleteFileDO(FileDO fileDO);
+
+    void cleanFile();
 }

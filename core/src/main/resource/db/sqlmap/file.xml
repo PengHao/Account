@@ -80,4 +80,8 @@
         </if>
     </update>
 
+
+    <delete id="cleanFile" >
+        truncate table file;
+    </delete>
 </mapper>

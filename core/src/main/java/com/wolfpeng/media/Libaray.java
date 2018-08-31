@@ -43,6 +43,11 @@ public class Libaray {
 
 
     public void scan() {
+        //清空所有数据
+        fileDao.cleanFile();
+        coverDAO.cleanCover();
+        metadataDAO.cleanMetadata();
+
         File file = new File(systemConfigDO.getLibarayPath());
         if (file.exists()) {
             readFile(file, null);

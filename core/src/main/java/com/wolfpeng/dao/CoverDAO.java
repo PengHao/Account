@@ -16,4 +16,7 @@ public interface CoverDAO  {
     void updateCoverDO(CoverDO userDO);
 
     void deleteCoverDO(UserDO userDO);
+
+    void cleanCover();
+
 }
