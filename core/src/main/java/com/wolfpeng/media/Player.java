@@ -81,6 +81,7 @@ public class Player {
                 }
                 playerCallBack.onReadData(buffer, len);
                 if (endMs != null && decodedDurationMS >= endMs) {
+                    playerCallBack.onReadEnd();
                     continue;
                 }
                 long time2=System.nanoTime()/1000000;

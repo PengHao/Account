@@ -13,6 +13,7 @@ import com.wolfpeng.model.FileDO;
 import com.wolfpeng.model.MetadataDO;
 import com.wolfpeng.model.UserDO;
 import com.wolfpeng.server.protocol.Base.Control;
+import com.wolfpeng.server.protocol.Base.Control.Action;
 import com.wolfpeng.server.protocol.MessageOuterClass.Message;
 import com.wolfpeng.server.protocol.NotifyOuterClass;
 import com.wolfpeng.server.protocol.NotifyOuterClass.Format;
@@ -44,9 +45,14 @@ public class Session {
         controllChannel.writeAndFlush(responseMessage);
     }
 
-    public void sendNotify(Notify.Builder notify) {
+    public void sendMusicNotify(Notify.Builder notify) {
         Message responseMessage = Message.newBuilder().setNotify(notify).build();
         musicChannel.writeAndFlush(responseMessage);
+    }
+
+    public void sendNotify(Notify.Builder notify) {
+        Message responseMessage = Message.newBuilder().setNotify(notify).build();
+        controllChannel.writeAndFlush(responseMessage);
     }
 
     @Resource
@@ -64,7 +70,7 @@ public class Session {
             @Override
             public void onReadData(byte[] data, long len) {
                 NotifyOuterClass.Data.Builder streamData = NotifyOuterClass.Data.newBuilder().setData(ByteString.copyFrom(data, 0, (int)len));
-                sendNotify(Notify.newBuilder().setData(streamData));
+                sendMusicNotify(Notify.newBuilder().setData(streamData));
             }
 
             @Override
@@ -76,12 +82,13 @@ public class Session {
                     .setFormatFlags(1)
                     .setSampleRate(Float.valueOf(audioFormat.getSampleRate()).intValue())
                     .setFramesPerPacket(1);
-                sendNotify(Notify.newBuilder().setFormat(format));
+                sendMusicNotify(Notify.newBuilder().setFormat(format));
             }
 
             @Override
             public void onReadEnd() {
                 //数据读取完毕
+                sendNotify(Notify.newBuilder().setControl(Control.newBuilder().setCorpus(Action.NEXT)));
 
             }
         });
