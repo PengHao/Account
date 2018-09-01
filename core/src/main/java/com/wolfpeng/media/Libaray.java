@@ -90,7 +90,14 @@ public class Libaray {
                 FileMeta subMeta = read(subfile, fileDO.getId());
                 if (subMeta != null) {
                     String fileName = subMeta.getFileDO().getName();
-                    submetas.put(fileName, subMeta);
+                    FileMeta subFileMeta = submetas.get(fileName);
+                    if (subFileMeta == null || (
+                        subFileMeta.getMetadataDOs() != null &&
+                        subMeta.getMetadataDOs() != null &&
+                        subFileMeta.getMetadataDOs().size() < subMeta.getMetadataDOs().size()
+                    )) {
+                        submetas.put(fileName, subMeta);
+                    }
                     continue;
                 }
                 if (fileMeta.getCover() != null) {
