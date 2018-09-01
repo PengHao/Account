@@ -81,6 +81,18 @@ public class CUEParser {
                         }
                     }
                     if(songIndex >= 1 && s.trim().toUpperCase().startsWith("INDEX") && s.trim().contains(" 01 ")){
+                        if (StringUtils.isEmpty(metadataDO.getTitle()) &&
+                            !StringUtils.isEmpty(cueFileBean.fileName)) {
+                            metadataDO.setTitle(cueFileBean.fileName);
+                        }
+                        if (StringUtils.isEmpty(metadataDO.getAblum()) &&
+                            !StringUtils.isEmpty(cueFileBean.albumName)) {
+                            metadataDO.setTitle(cueFileBean.albumName);
+                        }
+                        if (StringUtils.isEmpty(metadataDO.getPerformer()) &&
+                            !StringUtils.isEmpty(cueFileBean.performer)) {
+                            metadataDO.setTitle(cueFileBean.performer);
+                        }
                         songs.add(metadataDO);
                         metadataDO = new MetadataDO();
                     }
@@ -105,11 +117,7 @@ public class CUEParser {
 
         return cueFileBean;
     }
-    /**
-     * cue bean
-     * @author xuweilin
-     *
-     */
+
     @Data
     public static class CueFileBean{
         private String performer;

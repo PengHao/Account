@@ -2,9 +2,6 @@ package com.wolfpeng.media;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.wolfpeng.dao.CoverDAO;
-import com.wolfpeng.dao.FileDAO;
-import com.wolfpeng.dao.MetadataDAO;
 import com.wolfpeng.dao.SystemConfigDAO;
-import com.wolfpeng.exception.MediaServerException;
 import com.wolfpeng.media.CUEParser.CueFileBean;
 import com.wolfpeng.model.CoverDO;
 import com.wolfpeng.model.FileDO;
