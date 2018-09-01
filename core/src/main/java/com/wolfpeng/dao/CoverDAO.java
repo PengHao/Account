@@ -11,11 +11,11 @@ public interface CoverDAO  {
 
     CoverDO queryCoverDO(Long id);
 
-    void insertCoverDO(CoverDO userDO);
+    void insertCoverDO(CoverDO coverDO);
 
-    void updateCoverDO(CoverDO userDO);
+    void updateCoverDO(CoverDO coverDO);
 
-    void deleteCoverDO(UserDO userDO);
+    void deleteCoverDO(UserDO coverDO);
 
     void cleanCover();
 

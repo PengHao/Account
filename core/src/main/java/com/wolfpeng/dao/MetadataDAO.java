@@ -1,5 +1,7 @@
 package com.wolfpeng.dao;
 
+import java.util.List;
+
 import com.wolfpeng.model.MetadataDO;
 
 /**
@@ -10,7 +12,7 @@ public interface MetadataDAO {
 
     MetadataDO queryMetadataDO(Long id);
 
-    MetadataDO queryMetadataDOByTargetId(Long targetId);
+    List<MetadataDO> queryMetadataDOByTargetId(Long targetId);
 
     void insertMetadataDO(MetadataDO userDO);
 

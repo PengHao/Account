@@ -192,11 +192,14 @@ public class RequestProcess extends BaseProcess {
         MetadataRequest metadataRequest = request.getMetadataRequest();
         Long targetId = metadataRequest.getTargetId();
         Session session = sessionManager.getSession(ctx.channel());
-        MetadataDO metadataDO = libarayManager.getMetadataFromTarget(targetId);
-        Metadata.Builder metadata = Metadata.newBuilder();
-        metadata.setTargetId(metadataDO.getTargetId());
-        metadata.setId(metadataDO.getId());
-        if (metadataDO != null) {
+        List<MetadataDO> metadataDOs = libarayManager.getMetadataFromTarget(targetId);
+
+        MetadataResponse.Builder metadataResponse = MetadataResponse.newBuilder()
+            .setTargetId(targetId);
+        for (MetadataDO metadataDO : metadataDOs) {
+            Metadata.Builder metadata = Metadata.newBuilder();
+            metadata.setTargetId(metadataDO.getTargetId());
+            metadata.setId(metadataDO.getId());
             if (metadataDO.getStartTime() != null) {
                 metadata.setStart(metadataDO.getStartTime());
             }
@@ -251,11 +254,9 @@ public class RequestProcess extends BaseProcess {
             if (metadataDO.getCoverId() != null) {
                 metadata.setPictureId(metadataDO.getCoverId());
             }
+            metadataResponse.addMetadatas(metadata);
         }
 
-        MetadataResponse.Builder metadataResponse = MetadataResponse.newBuilder()
-            .setTargetId(metadataDO.getTargetId())
-            .addMetadatas(metadata);
         Response.Builder response = Response.newBuilder().setMetadataResponse(metadataResponse);
         session.sendResponse(response);
     }

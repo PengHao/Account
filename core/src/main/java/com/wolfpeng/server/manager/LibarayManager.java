@@ -13,7 +13,7 @@ import com.wolfpeng.model.MetadataDO;
 public interface LibarayManager {
     List<FileDO> getSubFileList(Long fileId);
 
-    MetadataDO getMetadataFromTarget(Long targetId);
+    List<MetadataDO> getMetadataFromTarget(Long targetId);
 
     CoverDO getCover(Long coverId);
 
@@ -22,5 +22,7 @@ public interface LibarayManager {
     void addMetadata(MetadataDO metadataDO);
 
     void addCover(CoverDO coverDO);
+
+    void scan();
 
 }

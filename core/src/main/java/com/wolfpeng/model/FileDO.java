@@ -10,6 +10,7 @@ import lombok.Data;
 public class FileDO extends BaseDO {
     public final static int DIC = 1;
     public final static int FILE = 0;
+    public final static int HIDDEN = 2;
 
 
     String path;

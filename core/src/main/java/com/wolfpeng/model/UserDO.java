@@ -20,10 +20,11 @@ public class UserDO extends BaseDO {
 
 CREATE TABLE `User` (
  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+ `create_time` datetime NOT NULL,
+ `modify_time` datetime NOT NULL,
+ `status` tinyint NOT NULL COMMENT '-1:删除， 1:有效',
   `name` char(24) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `pwd` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `create_time` datetime NOT NULL,
-  `modify_time` datetime NOT NULL,
   `last_login_time` datetime DEFAULT NULL,
 
   PRIMARY KEY (`id`)

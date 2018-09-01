@@ -37,4 +37,9 @@
         <property name="mapperInterface" value="com.wolfpeng.dao.UserDAO" />
         <property name="sqlSessionFactory" ref="sqlSessionFactory" />
     </bean>
+
+    <bean id="systemConfigDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.wolfpeng.dao.SystemConfigDAO" />
+        <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
 </beans>

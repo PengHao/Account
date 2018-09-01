@@ -9,4 +9,5 @@ import javax.sound.sampled.AudioFormat;
 public interface PlayerCallBack {
     void onReadData(byte[] data, long len);
     void onReadFormat(final AudioFormat audioFormat);
+    void onReadEnd();
 }

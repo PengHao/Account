@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wolfpeng.dao.SystemConfigDAO">
+    <resultMap type="com.wolfpeng.model.SystemConfigDO" id="systemConfigDOMap">
+        <id property="id" column="id" />
+        <result property="createTime" column="create_time" />
+        <result property="modifyTime" column="modify_time" />
+        <result property="libarayPath" column="libaray_path" />
+        <result property="fileTypes" column="file_types" />
+    </resultMap>
+
+    <select id="querySystemConfigDO"
+            resultMap="systemConfigDOMap">
+        select * from system_config
+    </select>
+
+    <insert
+            id="insertSystemConfigDO"
+            keyProperty="id"
+            useGeneratedKeys="true"
+            parameterType="com.wolfpeng.model.SystemConfigDO"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+      insert into system_config (libaray_path, file_types, create_time, modify_time) values (#{libarayPath}, #{fileTypes}, now(), now())
+    </insert>
+
+    <update
+            id="updateSystemConfigDO"
+            parameterType="com.wolfpeng.model.SystemConfigDO"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+
+        update system_config set
+        modify_time = now()
+        <if test="libarayPath != null">, libaray_path = #{libarayPath}</if>
+        <if test="fileTypes != null">, file_types = #{fileTypes}</if>
+        where id = #{id}
+    </update>
+
+</mapper>

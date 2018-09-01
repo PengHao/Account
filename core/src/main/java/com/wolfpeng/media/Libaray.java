@@ -1,16 +1,28 @@
 package com.wolfpeng.media;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import com.wolfpeng.dao.CoverDAO;
 import com.wolfpeng.dao.FileDAO;
 import com.wolfpeng.dao.MetadataDAO;
+import com.wolfpeng.dao.SystemConfigDAO;
+import com.wolfpeng.exception.MediaServerException;
+import com.wolfpeng.media.CUEParser.CueFileBean;
 import com.wolfpeng.model.CoverDO;
 import com.wolfpeng.model.FileDO;
 import com.wolfpeng.model.MetadataDO;
 import com.wolfpeng.model.SystemConfigDO;
+import lombok.Data;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -29,60 +41,123 @@ import org.springframework.util.StringUtils;
 public class Libaray {
     private static final Logger LOGGER = LoggerFactory.getLogger(Libaray.class);
 
-
     @Resource
-    FileDAO fileDao;
+    SystemConfigDAO systemConfigDAO;
 
-    @Resource
-    CoverDAO coverDAO;
+    SystemConfigDO systemConfigDO;
 
-    @Resource
-    MetadataDAO metadataDAO;
+    @Data
+    static public class FileMeta {
+        FileDO fileDO;
+        List<MetadataDO> metadataDOs;
+        CoverDO cover;
+        Map<String, FileMeta> subFileMetas;
+    }
 
-    SystemConfigDO systemConfigDO = SystemConfigDO.defaultSystemConfigDO;
-
-
-    public void scan() {
-        //清空所有数据
-        fileDao.cleanFile();
-        coverDAO.cleanCover();
-        metadataDAO.cleanMetadata();
+    public FileMeta scan() {
+        systemConfigDO = systemConfigDAO.querySystemConfigDO();
 
         File file = new File(systemConfigDO.getLibarayPath());
         if (file.exists()) {
-            readFile(file, null);
+            return read(file, null);
         } else {
-            System.out.println("文件不存在!");
+            return null;
         }
     }
 
-    private void readFile(File file, Long parentId) {
-        String absolutePath = file.getAbsolutePath();
+    private FileMeta read(File file, Long parentId) {
         String fileName = file.getName();
         if (fileName.charAt(0) == '.') {
-            return;
+            return null;
         }
+
+        if (file.isDirectory()) {
+            return readDictory(file, parentId);
+        }
+        return readFile(file, parentId);
+    }
+
+    private FileMeta readDictory(File file, Long parentId) {
+        String absolutePath = file.getAbsolutePath();
         FileDO fileDO = new FileDO();
         fileDO.setPath(absolutePath);
         fileDO.setName(file.getName());
         fileDO.setParentId(parentId);
-        fileDO.setType(file.isDirectory() ? FileDO.DIC : FileDO.FILE);
-        fileDao.insertFileDO(fileDO);
+        fileDO.setType(FileDO.DIC);
 
-        if (file.isDirectory()) {
-            File[] subfiles = file.listFiles();
-            if (null == subfiles || subfiles.length == 0) {
-                return;
-            } else {
-                for (File subfile : subfiles) {
-                    readFile(subfile, fileDO.getId());
+        FileMeta fileMeta = new FileMeta();
+        fileMeta.setFileDO(fileDO);
+
+
+        File[] subfiles = file.listFiles();
+        if (null != subfiles && subfiles.length > 0) {
+            Map<String, FileMeta> submetas = new HashMap<>();
+            fileMeta.setSubFileMetas(submetas);
+            for (File subfile : subfiles) {
+                FileMeta subMeta = read(subfile, fileDO.getId());
+                if (subMeta != null) {
+                    String fileName = subMeta.getFileDO().getName();
+                    submetas.put(fileName, subMeta);
+                    continue;
                 }
+                if (fileMeta.getCover() != null) {
+                    continue;
+                }
+                CoverDO cover = readCover(subfile);
+                fileMeta.setCover(cover);
             }
         }
+        return fileMeta;
 
+    }
+
+    private CoverDO readCover(File file) {
+
+        String subName = file.getName();
+        int idx = subName.lastIndexOf(".");
+        if (idx < 0) {
+            return null;
+        }
+
+        String fileTyle = subName.substring(idx, subName.length());
+        if (!".jpg".equals(fileTyle) &&
+            !".png".equals(fileTyle) &&
+            !".jpeg".equals(fileTyle)&&
+            !".bmp".equals(fileTyle)) {
+            return null;
+        }
+        String fileName = subName.substring(0, idx);
+        if (!"Cover".equals(fileName) &&
+            !"cover".equals(fileName) &&
+            !"COVER".equals(fileName)) {
+            return null;
+        }
+        try {
+            CoverDO coverDo = new CoverDO();
+            coverDo.setPath(file.getAbsolutePath());
+            FileInputStream reader = new FileInputStream(file);
+            Long fileSize = file.length();
+            if (fileSize > 1024*1024) {
+                return null;
+            }
+            byte[] data = new byte[fileSize.intValue()];
+            int i = reader.read(data);
+            if (i != fileSize.intValue()) {
+                return null;
+            }
+            coverDo.setData(data);
+            return coverDo;
+        } catch (Exception e) {
+            LOGGER.error("read cover error, path = {}, e = {}", file.getAbsoluteFile(), e);
+        }
+        return null;
+    }
+
+    private FileMeta readFile(File file, Long parentId) {
+        String absolutePath = file.getAbsolutePath();
         int idx = absolutePath.lastIndexOf(".");
         if (idx < 0) {
-            return;
+            return null;
         }
 
         String fileTyle = absolutePath.substring(idx, absolutePath.length());
@@ -94,11 +169,42 @@ public class Libaray {
             }
         }
         if (!isMatch) {
-            return;
+            return null;
         }
 
+
+        FileDO fileDO = new FileDO();
+        fileDO.setPath(absolutePath);
+        fileDO.setName(file.getName());
+        fileDO.setParentId(parentId);
+        fileDO.setType(FileDO.FILE);
+
+
+        if (fileTyle.equals(".cue")) {
+            CueFileBean cueFileBean = CUEParser.parseCueFile(file);
+            if (StringUtils.isEmpty(cueFileBean.getFileName())) {
+                String errormsg = String.format("Parse cue file error, audiofile not found. cue path = %s", absolutePath);
+                LOGGER.error(errormsg);
+            }
+
+            String audioFileName = String.format("%s/%s", file.getParent(), cueFileBean.getFileName());
+            File audioFile = new File(audioFileName);
+            if (audioFile == null || audioFile.exists() == false) {
+                return null;
+            }
+            FileMeta audioFileMeta = readFile(audioFile, parentId);
+            if (audioFileMeta == null) {
+                return null;
+            }
+            audioFileMeta.setMetadataDOs(cueFileBean.getSongs());
+            return audioFileMeta;
+        }
+
+        FileMeta fileMeta = new FileMeta();
+        fileMeta.setFileDO(fileDO);
+        List<MetadataDO> metadatas = new ArrayList<>();
+
         MetadataDO metadataDO = new MetadataDO();
-        metadataDO.setTargetId(fileDO.getId());
         try {
             AudioFile f = AudioFileIO.read(file);
             Tag tag = f.getTag();
@@ -125,16 +231,17 @@ public class Libaray {
                 CoverDO coverDO = new CoverDO();
                 coverDO.setData(artwork.getBinaryData());
                 coverDO.setPath(artwork.getImageUrl());
-                coverDAO.insertCoverDO(coverDO);
-                metadataDO.setCoverId(coverDO.getId());
+                fileMeta.setCover(coverDO);
             }
-
         } catch (Exception e) {
             LOGGER.error("absolutePath = {}, e = {}", absolutePath, e);
         }
+
         if (StringUtils.isEmpty(metadataDO.getTitle())) {
-            metadataDO.setTitle(fileName);
+            metadataDO.setTitle(file.getName());
         }
-        metadataDAO.insertMetadataDO(metadataDO);
+        metadatas.add(metadataDO);
+        fileMeta.setMetadataDOs(metadatas);
+        return fileMeta;
     }
 }

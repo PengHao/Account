@@ -12,6 +12,7 @@ import com.wolfpeng.media.PlayerCallBack;
 import com.wolfpeng.model.FileDO;
 import com.wolfpeng.model.MetadataDO;
 import com.wolfpeng.model.UserDO;
+import com.wolfpeng.server.protocol.Base.Control;
 import com.wolfpeng.server.protocol.MessageOuterClass.Message;
 import com.wolfpeng.server.protocol.NotifyOuterClass;
 import com.wolfpeng.server.protocol.NotifyOuterClass.Format;
@@ -54,12 +55,12 @@ public class Session {
     @Resource
     FileDAO fileDAO;
 
-    public void play(String filePath) throws MediaServerException {
+    public void play(String filePath, Long start, Long duration) throws MediaServerException {
         if (!playAble) {
             throw MediaServerException.builder().errorMessage("Device is not playable").build();
         }
 
-        player.play(filePath, new PlayerCallBack() {
+        player.play(filePath, start, duration, new PlayerCallBack() {
             @Override
             public void onReadData(byte[] data, long len) {
                 NotifyOuterClass.Data.Builder streamData = NotifyOuterClass.Data.newBuilder().setData(ByteString.copyFrom(data, 0, (int)len));
@@ -76,6 +77,12 @@ public class Session {
                     .setSampleRate(Float.valueOf(audioFormat.getSampleRate()).intValue())
                     .setFramesPerPacket(1);
                 sendNotify(Notify.newBuilder().setFormat(format));
+            }
+
+            @Override
+            public void onReadEnd() {
+                //数据读取完毕
+
             }
         });
 

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import com.wolfpeng.exception.ProcessException;
 import com.wolfpeng.media.Libaray;
 import com.wolfpeng.model.SystemConfigDO;
+import com.wolfpeng.server.manager.LibarayManager;
 import com.wolfpeng.server.manager.SessionManager;
 import com.wolfpeng.server.netty.MyServer;
 import org.springframework.beans.BeansException;
@@ -39,7 +40,7 @@ public class Index {
     MyServer controllServer;
 
     @Resource
-    Libaray libaray;
+    LibarayManager libarayManager;
 
     @RequestMapping(value = "/")
     public String index(HttpServletRequest request, HttpServletResponse response) {
@@ -54,15 +55,7 @@ public class Index {
 
     @RequestMapping(value = "/scan")
     public String scan(HttpServletRequest request, HttpServletResponse response) {
-
-        String libarayPath = "/Users/penghao/Music";
-
-        String fileTypes = ".flac, .cue, .wav, .mp3";
-
-        SystemConfigDO.defaultSystemConfigDO.setFileTypes(fileTypes);
-        SystemConfigDO.defaultSystemConfigDO.setLibarayPath(libarayPath);
-
-        libaray.scan();
+        libarayManager.scan();
         return "index";
     }
 

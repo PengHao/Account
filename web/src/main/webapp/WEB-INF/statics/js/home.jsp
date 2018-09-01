@@ -12,16 +12,9 @@
 </head>
 <body>
 
-<form action="/home/" method="post" id="content">
-    报名意向:
-    <select name="selectedSale" form="content">
-        <%
-            List<String> besales = (List<String>)request.getAttribute("beSale");
-            for (String besale : besales) {
-                out.print(String.format("<option value=\"%s\" selected = \"selected\">%s</option>", besale, besale));
-            }
-        %>
-    </select>
+
+<form action="/home/start" method="post" id="content">
+    开启服务:
     <input class="btn" type="submit" value='保存'/>
 </form>
 

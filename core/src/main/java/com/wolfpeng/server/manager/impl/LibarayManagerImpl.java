@@ -1,17 +1,22 @@
 package com.wolfpeng.server.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import com.wolfpeng.dao.CoverDAO;
 import com.wolfpeng.dao.FileDAO;
 import com.wolfpeng.dao.MetadataDAO;
+import com.wolfpeng.media.Libaray;
+import com.wolfpeng.media.Libaray.FileMeta;
 import com.wolfpeng.model.CoverDO;
 import com.wolfpeng.model.FileDO;
 import com.wolfpeng.model.MetadataDO;
 import com.wolfpeng.server.manager.LibarayManager;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Created by penghao on 2018/8/31.
@@ -27,6 +32,10 @@ public class LibarayManagerImpl implements LibarayManager {
 
     @Resource
     CoverDAO coverDAO;
+
+    @Resource
+    Libaray libaray;
+
     @Override
     public List<FileDO> getSubFileList(Long fileId) {
         if (fileId == -1) {
@@ -36,15 +45,17 @@ public class LibarayManagerImpl implements LibarayManager {
     }
 
     @Override
-    public MetadataDO getMetadataFromTarget(Long targetId) {
-        MetadataDO metadataDO = metadataDAO.queryMetadataDOByTargetId(targetId);
-        if (metadataDO == null) {
+    public List<MetadataDO> getMetadataFromTarget(Long targetId) {
+        List<MetadataDO> metadataDOs = metadataDAO.queryMetadataDOByTargetId(targetId);
+        if (CollectionUtils.isEmpty(metadataDOs)) {
             FileDO fileDO = fileDAO.queryFileDO(targetId);
-            metadataDO = new MetadataDO();
+            MetadataDO metadataDO = new MetadataDO();
             metadataDO.setTitle(fileDO.getName());
             metadataDO.setTargetId(fileDO.getId());
+            metadataDOs = new ArrayList<>();
+            metadataDOs.add(metadataDO);
         }
-        return metadataDO;
+        return metadataDOs;
     }
 
     @Override
@@ -65,5 +76,56 @@ public class LibarayManagerImpl implements LibarayManager {
     @Override
     public void addCover(CoverDO coverDO) {
         coverDAO.insertCoverDO(coverDO);
+    }
+
+    @Override
+    public void scan() {
+        //清空所有数据
+        fileDAO.cleanFile();
+        coverDAO.cleanCover();
+        metadataDAO.cleanMetadata();
+
+        Libaray.FileMeta fileMeta = libaray.scan();
+        saveFileMeta(fileMeta, null);
+    }
+
+    void saveFileMeta(Libaray.FileMeta fileMeta, Long parentId) {
+        if (fileMeta == null) {
+            return;
+        }
+        FileDO fileDO = fileMeta.getFileDO();
+        if (fileDO == null) {
+            return;
+        }
+        if (parentId != null) {
+            fileDO.setParentId(parentId);
+        }
+        fileDAO.insertFileDO(fileDO);
+        Long fileId = fileDO.getId();
+
+        Long coverId = null;
+        CoverDO coverDO = fileMeta.getCover();
+        if (coverDO != null) {
+            coverDAO.insertCoverDO(coverDO);
+            coverId = coverDO.getId();
+        }
+        List<MetadataDO> metadataDOs = fileMeta.getMetadataDOs();
+        if (metadataDOs != null) {
+
+            for (MetadataDO metadataDO : metadataDOs) {
+                if (coverId != null) {
+                    metadataDO.setCoverId(coverId);
+                }
+                metadataDO.setTargetId(fileId);
+                metadataDAO.insertMetadataDO(metadataDO);
+            }
+        }
+        Map<String, FileMeta> subMetas = fileMeta.getSubFileMetas();
+        if (subMetas == null) {
+            return;
+        }
+        for (Libaray.FileMeta subMeta : subMetas.values()) {
+            saveFileMeta(subMeta, fileId);
+        }
     }
 }

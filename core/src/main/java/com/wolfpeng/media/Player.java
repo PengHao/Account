@@ -40,16 +40,16 @@ public class Player {
         thread.interrupt();
     }
 
-    public void play(String filePath, PlayerCallBack playerCallBack) {
+    public void play(String filePath, Long start, Long duration, PlayerCallBack playerCallBack) {
         stop();
         thread = new Thread(() -> {
-            read(filePath, playerCallBack);
+            read(filePath, start, duration, playerCallBack);
         });
         thread.start();
     }
 
 
-    private void read(String filePath, PlayerCallBack playerCallBack) {
+    private void read(String filePath, Long start, Long duration, PlayerCallBack playerCallBack) {
         final File file = new File(filePath);
         try {
             final AudioInputStream in = AudioSystem.getAudioInputStream(file);
@@ -62,20 +62,34 @@ public class Player {
             Integer oneSecBufferSize = rs.intValue();
 
             //快进1秒
-            //inputStream.skip(oneSecBufferSize);
 
             byte[] buffer = new byte[oneSecBufferSize];
             int len = 0;
+            Long decodedDurationMS = 0L;
+            Long startMS = start != null && start > 0 ? start : null;
+            Long endMs = startMS != null && duration != null && duration > 0 ? startMS + duration : null;
+
             while (len > -1) {
                 long time1=System.nanoTime()/1000000;
                 len = inputStream.read(buffer, 0, buffer.length);
+                decodedDurationMS += len/oneSecBufferSize*1000;
+                if (startMS != null && startMS > decodedDurationMS) {
+                    continue;
+                }
                 if (len == -1) {
                     continue;
                 }
                 playerCallBack.onReadData(buffer, len);
+                if (endMs != null && decodedDurationMS >= endMs) {
+                    continue;
+                }
                 long time2=System.nanoTime()/1000000;
-                Thread.sleep(900 + time1 - time2);
+                long sleepTime = 900 + time1 - time2;
+                if (sleepTime > 0) {
+                    Thread.sleep(sleepTime);
+                }
             }
+            playerCallBack.onReadEnd();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

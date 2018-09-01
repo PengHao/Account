@@ -52,7 +52,7 @@ public class PlayerManagerImpl implements PlayerManager {
                 throw MediaServerException.builder().errorMessage(String.format("file not found, metaId = %d", metaId)).build();
             }
             String filePath = fileDO.getPath();
-            session.play(filePath);
+            session.play(filePath, metadataDO.getStartTime(), metadataDO.getDuration());
         } else {
             Control.Builder control = Control.newBuilder()
                 .setCorpus(Action.PLAY)

@@ -51,8 +51,8 @@ public class MetadataDO extends BaseDO {
  `status` tinyint NOT NULL COMMENT '-1:删除， 1:有效',
 
  `target_id` bigint unsigned NOT NULL COMMENT '文件id',
- `start_time` int(11) unsigned COMMENT 'cue开始时间点',
- `duration` int(11) unsigned COMMENT '持续时间',
+ `start_time` bigint unsigned COMMENT 'cue开始时间点',
+ `duration` bigint unsigned COMMENT '持续时间',
  `artist` varchar(128) COMMENT 'artist',
  `title` varchar(128) COMMENT 'title',
  `ablum` varchar(128) COMMENT 'ablum',
