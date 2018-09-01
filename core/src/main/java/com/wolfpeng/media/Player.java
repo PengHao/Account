@@ -99,8 +99,8 @@ public class Player {
     private AudioFormat getConvertOutFormat(AudioFormat inFormat) {
         final int channelNumber = inFormat.getChannels();
         final Float rate = inFormat.getSampleRate();
-        final int sampleSizeInBits = 16;
-        final int sampleSizePreFrame = inFormat.getChannels() * inFormat.getSampleSizeInBits() / 8;
+        final int sampleSizeInBits = inFormat.getSampleSizeInBits();
+        final int sampleSizePreFrame = inFormat.getChannels() * sampleSizeInBits / 8;
         return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, rate, sampleSizeInBits, channelNumber, sampleSizePreFrame, rate, false);
     }
 
