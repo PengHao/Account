@@ -2,23 +2,9 @@ package com.wolfpeng.media;
 
 import java.io.File;
 
-import javax.annotation.Resource;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-
-import com.wolfpeng.dao.CoverDAO;
-import com.wolfpeng.dao.FileDAO;
-import com.wolfpeng.dao.MetadataDAO;
-import com.wolfpeng.model.CoverDO;
-import com.wolfpeng.model.FileDO;
-import com.wolfpeng.model.MetadataDO;
-import com.wolfpeng.server.protocol.Base.Metadata;
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.datatype.Artwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -3,10 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="mediaServer" class="com.wolfpeng.server.netty.MyServer">
+    <bean id="mediaServer" class="com.wolfpeng.server.netty.MusicServer">
         <property name="port" value="28080" />
     </bean>
-    <bean id="controllServer" class="com.wolfpeng.server.netty.MyServer">
+    <bean id="controllServer" class="com.wolfpeng.server.netty.ControlServer">
         <property name="port" value="28081" />
     </bean>
     <import resource="JDBC.xml"/>

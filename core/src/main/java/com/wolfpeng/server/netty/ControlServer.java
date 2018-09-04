@@ -1,6 +1,5 @@
 package com.wolfpeng.server.netty;
 
-import com.wolfpeng.model.SystemConfigDO;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -8,8 +7,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +23,8 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class MyServer implements ApplicationContextAware {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MyServer.class);
-
+public class ControlServer implements ApplicationContextAware {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ControlServer.class);
 
     @Setter
     Integer port;
@@ -51,14 +47,13 @@ public class MyServer implements ApplicationContextAware {
 
         try {
             serverBootstrap.group(boss, worker)
-                .channel(NioServerSocketChannel.class)
+                .channel(UserNioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
+                .childHandler(new ChannelInitializer<UserSocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-
+                    protected void initChannel(UserSocketChannel socketChannel) throws Exception {
                         ChannelPipeline p = socketChannel.pipeline();
                         p.addLast("decoder", new ByteToProtocolBufferDecoder());
                         p.addLast("encoder", new ProtocolBufferToByteEncoder());

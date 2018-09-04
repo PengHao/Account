@@ -35,31 +35,21 @@ public class PlayerManagerImpl implements PlayerManager {
     FileDAO fileDAO;
 
     @Override
-    public void play(Session session, Long metaId, Long deviceId) throws MediaServerException {
+    public void play(Long metaId, Long deviceId) throws MediaServerException {
         Session deviceSession = sessionManager.getSession(deviceId);
         if (deviceSession == null
-            || deviceSession.getControllChannel() == null
             || deviceSession.getMusicChannel() == null
             || deviceSession.getPlayAble() == false) {
             LOGGER.error("device not found, deviceId = {}", deviceId);
             throw MediaServerException.builder().errorMessage("device not found").build();
         }
-        if (session == deviceSession) {
-            //play
-            MetadataDO metadataDO = metadataDAO.queryMetadataDO(metaId);
-            FileDO fileDO = fileDAO.queryFileDO(metadataDO.getTargetId());
-            if (fileDO == null) {
-                throw MediaServerException.builder().errorMessage(String.format("file not found, metaId = %d", metaId)).build();
-            }
-            String filePath = fileDO.getPath();
-            session.play(filePath, metadataDO.getStartTime(), metadataDO.getDuration());
-        } else {
-            Control.Builder control = Control.newBuilder()
-                .setCorpus(Action.PLAY)
-                .setContent(String.format("%d", metaId));
-            deviceSession.sendNotify(Notify.newBuilder().setControl(control));
+        MetadataDO metadataDO = metadataDAO.queryMetadataDO(metaId);
+        FileDO fileDO = fileDAO.queryFileDO(metadataDO.getTargetId());
+        if (fileDO == null) {
+            throw MediaServerException.builder().errorMessage(String.format("file not found, metaId = %d", metaId)).build();
         }
-
+        String filePath = fileDO.getPath();
+        deviceSession.play(filePath, metadataDO.getStartTime(), metadataDO.getDuration());
     }
 
     @Override

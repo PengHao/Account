@@ -11,10 +11,13 @@ import com.wolfpeng.exception.ProcessException;
 import com.wolfpeng.model.CoverDO;
 import com.wolfpeng.model.FileDO;
 import com.wolfpeng.model.MetadataDO;
+import com.wolfpeng.model.UserDO;
 import com.wolfpeng.server.manager.LibarayManager;
 import com.wolfpeng.server.manager.PlayerManager;
 import com.wolfpeng.server.manager.Session;
 import com.wolfpeng.server.manager.SessionManager;
+import com.wolfpeng.server.manager.UserManager;
+import com.wolfpeng.server.netty.UserSocketChannel;
 import com.wolfpeng.server.protocol.Base.Control;
 import com.wolfpeng.server.protocol.Base.Control.Action;
 import com.wolfpeng.server.protocol.Base.Device;
@@ -25,7 +28,6 @@ import com.wolfpeng.server.protocol.MessageOuterClass.*;
 import com.wolfpeng.server.protocol.NotifyOuterClass.Notify;
 import com.wolfpeng.server.protocol.RequestOuterClass.*;
 import com.wolfpeng.server.protocol.ResponseOuterClass.*;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -51,6 +53,9 @@ public class RequestProcess extends BaseProcess {
     @Resource
     PlayerManager playerManager;
 
+    @Resource
+    UserManager userManager;
+
     @Override
     String getName(Message message) {
         Request request = message.getRequest();
@@ -69,28 +74,47 @@ public class RequestProcess extends BaseProcess {
         String name = loginRequest.getUserName();
         String pwd = loginRequest.getPassWord();
         Boolean playAble = loginRequest.getPlayAble();
-        Channel channel = ctx.channel();
-        Session session = null;
+        UserSocketChannel channel = (UserSocketChannel)ctx.channel();
+        Session session = channel.getSession();
+        session.setPlayAble(playAble);
+
         LoginResponse.Builder loginResponse = LoginResponse.newBuilder();
         try {
-            session = sessionManager.login(name, pwd, channel);
-            session.setPlayAble(playAble);
-            loginResponse.setUid(session.getUserDO().getId());
+            UserDO userDO = userManager.login(name, pwd);
+            sessionManager.addSession(session, userDO);
+            channel.parent().bind(userDO.getId(), channel);
+            loginResponse.setUid(userDO.getId());
         } catch (ProcessException e) {
             loginResponse.setUid(-1);
             loginResponse.setMessage(e.getErrorMsg());
         }
-
         Response.Builder response = Response.newBuilder().setLoginResponse(loginResponse);
-        session.sendResponse(response);
+        Message responseMessage = Message.newBuilder().setResponse(response).build();
+        channel.writeAndFlush(responseMessage);
     }
 
+    @PathMethod(name = "BIND_REQUEST")
+    public void onBind(Request request, ChannelHandlerContext ctx) {
+        BindRequest bindRequest = request.getBindRequest();
+        BindResponse.Builder bindResponse = BindResponse.newBuilder();
+        try {
+            sessionManager.bindMusicChannel(bindRequest.getUid(), ctx.channel());
+            bindResponse.setSuccess(true);
+        } catch (ProcessException e) {
+            e.printStackTrace();
+            bindResponse.setSuccess(false);
+        }
+
+        Response.Builder response = Response.newBuilder().setBindResponse(bindResponse);
+
+        Message responseMessage = Message.newBuilder().setResponse(response).build();
+        ctx.channel().writeAndFlush(responseMessage);
+    }
 
     @PathMethod(name = "TARGET_REQUEST")
     public void onTarget(Request request, ChannelHandlerContext ctx) {
         TargetRequest targetRequest = request.getTargetRequest();
-        Channel channel = ctx.channel();
-        Session session = sessionManager.getSession(channel);
+        UserSocketChannel channel = (UserSocketChannel)ctx.channel();
         long targetID = targetRequest.getTargetId();
         List<FileDO> fileDOs = libarayManager.getSubFileList(targetID);
 
@@ -104,19 +128,18 @@ public class RequestProcess extends BaseProcess {
             );
         });
         Response.Builder response = Response.newBuilder().setTargetResponse(targetResponse);
-        session.sendResponse(response);
+        channel.sendResponse(response);
 
     }
 
     @PathMethod(name = "HEART_BEAT_REQUEST")
     public void onHeartBeat(Request request, ChannelHandlerContext ctx) {
         HeartBeatRequest heartBeatRequest = request.getHeartBeatRequest();
-        Channel channel = ctx.channel();
-        Session session = sessionManager.getSession(channel);
+        UserSocketChannel channel = (UserSocketChannel)ctx.channel();
 
         HeartBeatResponse.Builder builder = HeartBeatResponse.newBuilder();
         Response.Builder response = Response.newBuilder().setHeartBeatResponse(builder);
-        session.sendResponse(response);
+        channel.sendResponse(response);
     }
 
     @PathMethod(name = "PLAY_REQUEST")
@@ -124,47 +147,37 @@ public class RequestProcess extends BaseProcess {
         PlayRequest playRequest = request.getPlayRequest();
         Long deviceId = playRequest.getDeviceId();
         Long metaId = playRequest.getMetadataId();
-        Channel channel = ctx.channel();
-
-        Session session = sessionManager.getSession(channel);
-
+        UserSocketChannel channel = (UserSocketChannel)ctx.channel();
         PlayResponse.Builder playResponse = PlayResponse.newBuilder();
 
         try {
-            playerManager.play(session, metaId, deviceId);
+            UserSocketChannel targetChannel = channel.parent().getChannel(deviceId);
+            if (targetChannel == null) {
+                LOGGER.error("device not found, deviceId = {}", deviceId);
+                throw MediaServerException.builder().errorMessage("device not found").build();
+            }
+
+            if (channel == targetChannel) {
+                playerManager.play(metaId, deviceId);
+            } else {
+                Control.Builder control = Control.newBuilder()
+                    .setCorpus(Action.PLAY)
+                    .setContent(String.format("%d", metaId));
+                targetChannel.sendNotify(Notify.newBuilder().setControl(control));
+            }
         } catch (MediaServerException e) {
             LOGGER.error("onPlay error, msg = {}, e = {}", e.getErrorMessage(), e);
         }
         Response.Builder response = Response.newBuilder().setPlayResponse(playResponse);
-        session.sendResponse(response);
+        channel.sendResponse(response);
     }
 
-    @PathMethod(name = "BIND_REQUEST")
-    public void onBind(Request request, ChannelHandlerContext ctx) {
-        BindRequest bindRequest = request.getBindRequest();
-        bindRequest.getUid();
-
-        BindResponse.Builder bindResponse = BindResponse.newBuilder();
-        Session session = null;
-        try {
-            session = sessionManager.bind(bindRequest.getUid(), ctx.channel());
-            bindResponse.setSuccess(true);
-        } catch (ProcessException e) {
-            e.printStackTrace();
-            bindResponse.setSuccess(false);
-        }
-
-        Response.Builder response = Response.newBuilder().setBindResponse(bindResponse);
-
-        Message responseMessage = Message.newBuilder().setResponse(response).build();
-        ctx.channel().writeAndFlush(responseMessage);
-    }
 
     @PathMethod(name = "PLAYABLE_DEVICE_REQUEST")
     public void onPlaybleDevice(Request request, ChannelHandlerContext ctx) {
         PlayableDeviceRequest playableDeviceRequest = request.getPlayableDeviceRequest();
         PlayableDeviceResponse.Builder builder = PlayableDeviceResponse.newBuilder();
-        Session session = sessionManager.getSession(ctx.channel());
+        UserSocketChannel channel = (UserSocketChannel)ctx.channel();
         sessionManager.getPlayableSessions().forEach(e -> {
             if (e.getPlayAble()) {
                 Device device = Device.newBuilder()
@@ -176,23 +189,26 @@ public class RequestProcess extends BaseProcess {
         });
 
         Response.Builder response = Response.newBuilder().setPlayableDeviceResponse(builder);
-        session.sendResponse(response);
+        channel.sendResponse(response);
     }
 
     @PathMethod(name = "CONTROL_REQUEST")
     public void onControl(Request request, ChannelHandlerContext ctx) {
         ControlRequest controlRequest = request.getControlRequest();
         Control control = controlRequest.getControl();
-        Session session = sessionManager.getSession(controlRequest.getDeviceId());
-        session.sendNotify(Notify.newBuilder().setControl(control));
+        UserSocketChannel channel = (UserSocketChannel)ctx.channel();
+        UserSocketChannel deviceChannel = channel.parent().getChannel(controlRequest.getDeviceId());
+        if (deviceChannel != null) {
+            deviceChannel.sendNotify(Notify.newBuilder().setControl(control));
+        }
     }
 
     @PathMethod(name = "METADATA_REQUEST")
     public void onMetadata(Request request, ChannelHandlerContext ctx) {
         MetadataRequest metadataRequest = request.getMetadataRequest();
         Long targetId = metadataRequest.getTargetId();
-        Session session = sessionManager.getSession(ctx.channel());
         List<MetadataDO> metadataDOs = libarayManager.getMetadataFromTarget(targetId);
+        UserSocketChannel channel = (UserSocketChannel)ctx.channel();
 
         MetadataResponse.Builder metadataResponse = MetadataResponse.newBuilder()
             .setTargetId(targetId);
@@ -258,15 +274,15 @@ public class RequestProcess extends BaseProcess {
         }
 
         Response.Builder response = Response.newBuilder().setMetadataResponse(metadataResponse);
-        session.sendResponse(response);
+        channel.sendResponse(response);
     }
 
     @PathMethod(name = "COVER_REQUEST")
     public void onCover(Request request, ChannelHandlerContext ctx) {
         CoverRequest coverRequest = request.getCoverRequest();
-        Session session = sessionManager.getSession(ctx.channel());
         CoverDO coverDO = libarayManager.getCover(coverRequest.getPictureId());
         CoverResponse.Builder coverResponse = CoverResponse.newBuilder();
+        UserSocketChannel channel = (UserSocketChannel)ctx.channel();
 
         if (coverDO != null) {
             if (coverDO.getData() != null) {
@@ -276,7 +292,7 @@ public class RequestProcess extends BaseProcess {
         }
 
         Response.Builder response = Response.newBuilder().setCoverResponse(coverResponse);
-        session.sendResponse(response);
+        channel.sendResponse(response);
     }
 
 

@@ -2,10 +2,13 @@ package com.wolfpeng.server.netty;
 
 import java.util.List;
 
+import com.wolfpeng.server.manager.Session;
 import com.wolfpeng.server.protocol.MessageOuterClass.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+
+import static com.wolfpeng.server.manager.SessionManager.SESSION_KEY;
 
 /**
  * Created by penghao on 2018/8/23.
@@ -22,6 +25,7 @@ public class ByteToProtocolBufferDecoder extends ByteToMessageDecoder {
             if (in.readableBytes() < 4) {
                 break;
             }
+
             currentPackageLength = in.readIntLE();
             if (in.readableBytes() >= currentPackageLength) {
                 byte[] bytes = new byte[currentPackageLength];

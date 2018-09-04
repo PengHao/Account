@@ -8,7 +8,7 @@ import com.wolfpeng.exception.MediaServerException;
  */
 public interface PlayerManager {
 
-    void play(Session session, Long metaId, Long deviceId) throws MediaServerException;
+    void play(Long metaId, Long deviceId) throws MediaServerException;
 
     void pause(Session session) throws MediaServerException;
 

@@ -4,20 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.wolfpeng.exception.ProcessException;
-import com.wolfpeng.media.Libaray;
-import com.wolfpeng.model.SystemConfigDO;
 import com.wolfpeng.server.manager.LibarayManager;
 import com.wolfpeng.server.manager.SessionManager;
-import com.wolfpeng.server.netty.MyServer;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import com.wolfpeng.server.netty.ControlServer;
+import com.wolfpeng.server.netty.MusicServer;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -34,10 +29,10 @@ public class Index {
     SessionManager sessionManagerl;
 
     @Resource(name = "mediaServer")
-    MyServer mediaServer;
+    MusicServer mediaServer;
 
     @Resource(name = "controllServer")
-    MyServer controllServer;
+    ControlServer controlServer;
 
     @Resource
     LibarayManager libarayManager;
@@ -55,6 +50,7 @@ public class Index {
 
     @RequestMapping(value = "/scan")
     public String scan(HttpServletRequest request, HttpServletResponse response) {
+
         libarayManager.scan();
         return "index";
     }
@@ -74,7 +70,7 @@ public class Index {
     @RequestMapping(value = "/start")
     public String start(HttpServletRequest request, HttpServletResponse response) {
         mediaServer.run();
-        controllServer.run();
+        controlServer.run();
         return "index";
     }
 

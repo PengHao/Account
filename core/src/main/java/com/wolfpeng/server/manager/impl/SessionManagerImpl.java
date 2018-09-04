@@ -47,35 +47,6 @@ public class SessionManagerImpl implements SessionManager {
     MetadataDAO metadataDAO;
 
     @Override
-    public Session login(String name, String pwd, Channel channel) throws ProcessException {
-        UserDO userDO = userDAO.queryUserDO(name, pwd);
-        if (userDO == null) {
-            LOGGER.error("login failed: name = {}, pwd = {}", name, pwd);
-            throw ProcessException.builder().errorCode(-1).errorMsg("invalid user").build();
-        }
-
-        Session session = getSession(channel);
-        if (session != null) {
-            LOGGER.error("this channel is aready logined");
-            throw ProcessException.builder().errorCode(-1).errorMsg("aready logined").build();
-        }
-
-        userDO.setLastLoginTime(new Date());
-        userDAO.updateUserDO(userDO);
-        session = sessionHashMap.get(userDO.getId());
-        if (session == null) {
-            session = new Session();
-        } else {
-            //close channel
-        }
-        session.setUserDO(userDO);
-        session.setControllChannel(channel);
-        channel.attr(SESSION_KEY).set(session);
-        sessionHashMap.put(userDO.getId(), session);
-        return session;
-    }
-
-    @Override
     public void register(String name, String pwd) throws ProcessException {
         UserDO userDO = new UserDO();
         userDO.setName(name);
@@ -93,7 +64,17 @@ public class SessionManagerImpl implements SessionManager {
     }
 
     @Override
-    public Session bind(Long id, Channel channel) throws ProcessException {
+    public void addSession(Session session, UserDO userDO) throws ProcessException {
+        if (sessionHashMap.containsKey(userDO.getId())) {
+            LOGGER.error("this session is aready logined");
+            throw ProcessException.builder().errorCode(-1).errorMsg("aready logined").build();
+        }
+        session.setUserDO(userDO);
+        sessionHashMap.put(userDO.getId(), session);
+    }
+
+    @Override
+    public Session bindMusicChannel(Long id, Channel channel) throws ProcessException {
         Session session = getSession(channel);
         if (session != null) {
             LOGGER.error("this channel is aready logined");

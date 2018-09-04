@@ -28,7 +28,6 @@ import lombok.Data;
  */
 @Data
 public class Session {
-    Channel controllChannel;
     Channel musicChannel;
     UserDO userDO;
     Player player = new Player();
@@ -36,23 +35,13 @@ public class Session {
 
     public void logout() {
         player.stop();
-        controllChannel.close();
         musicChannel.close();
     }
 
-    public void sendResponse(Response.Builder response) {
-        Message responseMessage = Message.newBuilder().setResponse(response).build();
-        controllChannel.writeAndFlush(responseMessage);
-    }
 
     public void sendMusicNotify(Notify.Builder notify) {
         Message responseMessage = Message.newBuilder().setNotify(notify).build();
         musicChannel.writeAndFlush(responseMessage);
-    }
-
-    public void sendNotify(Notify.Builder notify) {
-        Message responseMessage = Message.newBuilder().setNotify(notify).build();
-        controllChannel.writeAndFlush(responseMessage);
     }
 
     @Resource
@@ -88,8 +77,7 @@ public class Session {
             @Override
             public void onReadEnd() {
                 //数据读取完毕
-                sendNotify(Notify.newBuilder().setControl(Control.newBuilder().setCorpus(Action.NEXT)));
-
+                //sendNotify(Notify.newBuilder().setControl(Control.newBuilder().setCorpus(Action.NEXT)));
             }
         });
 

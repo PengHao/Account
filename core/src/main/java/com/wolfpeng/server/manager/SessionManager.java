@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.wolfpeng.exception.MediaServerException;
 import com.wolfpeng.exception.ProcessException;
+import com.wolfpeng.model.UserDO;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 
@@ -15,13 +16,13 @@ public interface SessionManager {
 
     static final AttributeKey<Session> SESSION_KEY = AttributeKey.newInstance("SESSION_KEY");
 
-    Session login(String name, String pwd, Channel channel) throws ProcessException;
-
     void register(String name, String pwd) throws ProcessException;
 
     void logout(Session session) ;
 
-    Session bind(Long id, Channel channel) throws ProcessException;
+    void addSession(Session session, UserDO userDO) throws ProcessException ;
+
+    Session bindMusicChannel(Long id, Channel channel) throws ProcessException;
 
     Session getSession(Channel channel);
 
