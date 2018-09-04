@@ -65,10 +65,10 @@ public class SessionManagerImpl implements SessionManager {
 
     @Override
     public void addSession(Session session, UserDO userDO) throws ProcessException {
-        if (sessionHashMap.containsKey(userDO.getId())) {
-            LOGGER.error("this session is aready logined");
-            throw ProcessException.builder().errorCode(-1).errorMsg("aready logined").build();
-        }
+        //if (sessionHashMap.containsKey(userDO.getId())) {
+        //    LOGGER.error("this session is aready logined");
+        //    throw ProcessException.builder().errorCode(-1).errorMsg("aready logined").build();
+        //}
         session.setUserDO(userDO);
         sessionHashMap.put(userDO.getId(), session);
     }
