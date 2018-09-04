@@ -77,7 +77,8 @@ public class Session {
             @Override
             public void onReadEnd() {
                 //数据读取完毕
-                //sendNotify(Notify.newBuilder().setControl(Control.newBuilder().setCorpus(Action.NEXT)));
+                NotifyOuterClass.Data.Builder streamData = NotifyOuterClass.Data.newBuilder().setData(ByteString.EMPTY);
+                sendMusicNotify(Notify.newBuilder().setData(streamData));
             }
         });
 

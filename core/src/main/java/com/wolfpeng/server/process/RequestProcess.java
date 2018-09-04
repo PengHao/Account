@@ -175,7 +175,6 @@ public class RequestProcess extends BaseProcess {
 
     @PathMethod(name = "PLAYABLE_DEVICE_REQUEST")
     public void onPlaybleDevice(Request request, ChannelHandlerContext ctx) {
-        PlayableDeviceRequest playableDeviceRequest = request.getPlayableDeviceRequest();
         PlayableDeviceResponse.Builder builder = PlayableDeviceResponse.newBuilder();
         UserSocketChannel channel = (UserSocketChannel)ctx.channel();
         sessionManager.getPlayableSessions().forEach(e -> {
