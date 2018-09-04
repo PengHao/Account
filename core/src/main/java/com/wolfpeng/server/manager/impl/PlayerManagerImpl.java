@@ -53,12 +53,12 @@ public class PlayerManagerImpl implements PlayerManager {
     }
 
     @Override
-    public void pause(Session session) throws MediaServerException {
+    public void pause(Long deviceId) throws MediaServerException {
 
     }
 
     @Override
-    public void next(Session session) throws MediaServerException {
+    public void next(Long deviceId) throws MediaServerException {
 
     }
 }

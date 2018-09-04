@@ -165,8 +165,11 @@ public class RequestProcess extends BaseProcess {
                     .setContent(String.format("%d", metaId));
                 targetChannel.sendNotify(Notify.newBuilder().setControl(control));
             }
+            playResponse.setSuccess(true);
         } catch (MediaServerException e) {
             LOGGER.error("onPlay error, msg = {}, e = {}", e.getErrorMessage(), e);
+            playResponse.setSuccess(false);
+            playResponse.setMessage(e.getErrorMessage());
         }
         Response.Builder response = Response.newBuilder().setPlayResponse(playResponse);
         channel.sendResponse(response);

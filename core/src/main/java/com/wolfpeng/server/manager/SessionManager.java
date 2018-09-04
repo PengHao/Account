@@ -14,8 +14,6 @@ import io.netty.util.AttributeKey;
  */
 public interface SessionManager {
 
-    static final AttributeKey<Session> SESSION_KEY = AttributeKey.newInstance("SESSION_KEY");
-
     void register(String name, String pwd) throws ProcessException;
 
     void logout(Session session) ;
@@ -23,8 +21,6 @@ public interface SessionManager {
     void addSession(Session session, UserDO userDO) throws ProcessException ;
 
     Session bindMusicChannel(Long id, Channel channel) throws ProcessException;
-
-    Session getSession(Channel channel);
 
     Session getSession(Long id);
 

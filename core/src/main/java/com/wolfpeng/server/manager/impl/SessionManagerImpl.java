@@ -75,23 +75,11 @@ public class SessionManagerImpl implements SessionManager {
 
     @Override
     public Session bindMusicChannel(Long id, Channel channel) throws ProcessException {
-        Session session = getSession(channel);
-        if (session != null) {
-            LOGGER.error("this channel is aready logined");
-            throw ProcessException.builder().errorCode(-1).errorMsg("aready logined").build();
-        }
-
-        session = sessionHashMap.get(id);
+        Session session = sessionHashMap.get(id);
         if (session == null) {
             throw ProcessException.builder().errorCode(-1).errorMsg("user not logined").build();
         }
         session.setMusicChannel(channel);
-        return session;
-    }
-
-    @Override
-    public Session getSession(Channel channel) {
-        Session session = channel.attr(SESSION_KEY).get();
         return session;
     }
 

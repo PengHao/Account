@@ -10,7 +10,7 @@ public interface PlayerManager {
 
     void play(Long metaId, Long deviceId) throws MediaServerException;
 
-    void pause(Session session) throws MediaServerException;
+    void pause(Long deviceId) throws MediaServerException;
 
-    void next(Session session) throws MediaServerException;
+    void next(Long deviceId) throws MediaServerException;
 }
