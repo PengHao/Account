@@ -1,9 +1,12 @@
 package com.wolfpeng.server.manager;
 
+import java.util.UUID;
+
 import javax.annotation.Resource;
 import javax.sound.sampled.AudioFormat;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Timestamp;
 import com.wolfpeng.dao.FileDAO;
 import com.wolfpeng.dao.MetadataDAO;
 import com.wolfpeng.exception.MediaServerException;
@@ -32,6 +35,7 @@ public class Session {
     UserDO userDO;
     Player player = new Player();
     Boolean playAble = false;
+    String token = UUID.randomUUID().toString().replace("-", "");
 
     public void logout() {
         player.stop();

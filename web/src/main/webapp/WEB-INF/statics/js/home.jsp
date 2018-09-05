@@ -12,10 +12,13 @@
 </head>
 <body>
 
-
-<form action="/home/start" method="post" id="content">
+<form action="/home/start" method="post" id="start">
     开启服务:
-    <input class="btn" type="submit" value='保存'/>
+    <input class="btn" type="submit" value='开启'/>
+</form>
+<form action="/home/scan" method="post" id="scan">
+    扫描目录:
+    <input class="btn" type="submit" value='扫描'/>
 </form>
 
 </body>

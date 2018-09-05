@@ -89,8 +89,7 @@ public class RequestProcess extends BaseProcess {
             loginResponse.setMessage(e.getErrorMsg());
         }
         Response.Builder response = Response.newBuilder().setLoginResponse(loginResponse);
-        Message responseMessage = Message.newBuilder().setResponse(response).build();
-        channel.writeAndFlush(responseMessage);
+        channel.sendResponse(response);
     }
 
     @PathMethod(name = "BIND_REQUEST")
@@ -134,9 +133,7 @@ public class RequestProcess extends BaseProcess {
 
     @PathMethod(name = "HEART_BEAT_REQUEST")
     public void onHeartBeat(Request request, ChannelHandlerContext ctx) {
-        HeartBeatRequest heartBeatRequest = request.getHeartBeatRequest();
         UserSocketChannel channel = (UserSocketChannel)ctx.channel();
-
         HeartBeatResponse.Builder builder = HeartBeatResponse.newBuilder();
         Response.Builder response = Response.newBuilder().setHeartBeatResponse(builder);
         channel.sendResponse(response);

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Copyright ? 2017年 com.wolfpeng. All rights reserved.
  */
 
-@Controller("HomeIndex")
+@Controller
 @RequestMapping("/home")
 public class Index {
 
