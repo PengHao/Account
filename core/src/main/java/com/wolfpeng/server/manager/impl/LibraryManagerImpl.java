@@ -14,7 +14,7 @@ import com.wolfpeng.media.Libaray.FileMeta;
 import com.wolfpeng.model.CoverDO;
 import com.wolfpeng.model.FileDO;
 import com.wolfpeng.model.MetadataDO;
-import com.wolfpeng.server.manager.LibarayManager;
+import com.wolfpeng.server.manager.LibraryManager;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -23,7 +23,7 @@ import org.springframework.util.CollectionUtils;
  * Copyright © 2017年 penghao. All rights reserved.
  */
 @Service
-public class LibarayManagerImpl implements LibarayManager {
+public class LibraryManagerImpl implements LibraryManager {
     @Resource
     FileDAO fileDAO;
 

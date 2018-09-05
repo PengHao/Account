@@ -12,7 +12,7 @@ import com.wolfpeng.model.CoverDO;
 import com.wolfpeng.model.FileDO;
 import com.wolfpeng.model.MetadataDO;
 import com.wolfpeng.model.UserDO;
-import com.wolfpeng.server.manager.LibarayManager;
+import com.wolfpeng.server.manager.LibraryManager;
 import com.wolfpeng.server.manager.PlayerManager;
 import com.wolfpeng.server.manager.Session;
 import com.wolfpeng.server.manager.SessionManager;
@@ -48,7 +48,7 @@ public class RequestProcess extends BaseProcess {
     SessionManager sessionManager;
 
     @Resource
-    LibarayManager libarayManager;
+    LibraryManager libraryManager;
 
     @Resource
     PlayerManager playerManager;
@@ -115,7 +115,7 @@ public class RequestProcess extends BaseProcess {
         TargetRequest targetRequest = request.getTargetRequest();
         UserSocketChannel channel = (UserSocketChannel)ctx.channel();
         long targetID = targetRequest.getTargetId();
-        List<FileDO> fileDOs = libarayManager.getSubFileList(targetID);
+        List<FileDO> fileDOs = libraryManager.getSubFileList(targetID);
 
         TargetResponse.Builder targetResponse = TargetResponse.newBuilder();
         fileDOs.forEach(fileDO -> {
@@ -206,7 +206,7 @@ public class RequestProcess extends BaseProcess {
     public void onMetadata(Request request, ChannelHandlerContext ctx) {
         MetadataRequest metadataRequest = request.getMetadataRequest();
         Long targetId = metadataRequest.getTargetId();
-        List<MetadataDO> metadataDOs = libarayManager.getMetadataFromTarget(targetId);
+        List<MetadataDO> metadataDOs = libraryManager.getMetadataFromTarget(targetId);
         UserSocketChannel channel = (UserSocketChannel)ctx.channel();
 
         MetadataResponse.Builder metadataResponse = MetadataResponse.newBuilder()
@@ -279,7 +279,7 @@ public class RequestProcess extends BaseProcess {
     @PathMethod(name = "COVER_REQUEST")
     public void onCover(Request request, ChannelHandlerContext ctx) {
         CoverRequest coverRequest = request.getCoverRequest();
-        CoverDO coverDO = libarayManager.getCover(coverRequest.getPictureId());
+        CoverDO coverDO = libraryManager.getCover(coverRequest.getPictureId());
         CoverResponse.Builder coverResponse = CoverResponse.newBuilder();
         UserSocketChannel channel = (UserSocketChannel)ctx.channel();
 

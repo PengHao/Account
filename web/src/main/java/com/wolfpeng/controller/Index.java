@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.wolfpeng.exception.ProcessException;
-import com.wolfpeng.server.manager.LibarayManager;
+import com.wolfpeng.server.manager.LibraryManager;
 import com.wolfpeng.server.manager.SessionManager;
 import com.wolfpeng.server.netty.ControlServer;
 import com.wolfpeng.server.netty.MusicServer;
@@ -35,7 +35,7 @@ public class Index {
     ControlServer controlServer;
 
     @Resource
-    LibarayManager libarayManager;
+    LibraryManager libraryManager;
 
     @RequestMapping(value = "/")
     public String index(HttpServletRequest request, HttpServletResponse response) {
@@ -51,7 +51,7 @@ public class Index {
     @RequestMapping(value = "/scan")
     public String scan(HttpServletRequest request, HttpServletResponse response) {
 
-        libarayManager.scan();
+        libraryManager.scan();
         return "index";
     }
 

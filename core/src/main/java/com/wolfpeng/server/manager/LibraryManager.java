@@ -10,7 +10,7 @@ import com.wolfpeng.model.MetadataDO;
  * Created by penghao on 2018/8/31.
  * Copyright © 2017年 penghao. All rights reserved.
  */
-public interface LibarayManager {
+public interface LibraryManager {
     List<FileDO> getSubFileList(Long fileId);
 
     List<MetadataDO> getMetadataFromTarget(Long targetId);
