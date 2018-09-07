@@ -7,7 +7,7 @@ import javax.sound.sampled.AudioFormat;
  */
 
 public interface PlayerCallBack {
-    void onReadData(byte[] data, long len);
-    void onReadFormat(final AudioFormat audioFormat);
-    void onReadEnd();
+    void onReadData(byte[] data, long len) throws Exception;
+    void onReadFormat(final AudioFormat audioFormat, long frameLength) throws Exception;
+    void onReadEnd() throws Exception;
 }

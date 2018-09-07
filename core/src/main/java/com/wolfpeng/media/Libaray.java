@@ -208,7 +208,6 @@ public class Libaray {
         try {
             AudioFile f = AudioFileIO.read(file);
             Tag tag = f.getTag();
-
             metadataDO.setArtist(tag.getFirst(FieldKey.ARTIST));
             metadataDO.setTitle(tag.getFirst(FieldKey.TITLE));
             metadataDO.setAblum(tag.getFirst(FieldKey.ALBUM));

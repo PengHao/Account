@@ -59,6 +59,15 @@ public class LibraryManagerImpl implements LibraryManager {
         return metadataDOs;
     }
 
+    @Override
+    public MetadataDO getMetadata(Long metadataId) {
+        return metadataDAO.queryMetadataDO(metadataId);
+    }
+
+    @Override
+    public FileDO getFile(Long fileId) {
+        return fileDAO.queryFileDO(fileId);
+    }
 
     @Override
     public CoverDO getCover(Long coverId) {

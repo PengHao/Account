@@ -26,21 +26,22 @@ public class Player {
         thread.interrupt();
     }
 
-    public void play(String filePath, Long start, Long duration, PlayerCallBack playerCallBack) {
+    public void asyncPlay(String filePath, Long start, Long duration, PlayerCallBack playerCallBack) {
         stop();
         thread = new Thread(() -> {
-            read(filePath, start, duration, playerCallBack);
+            syncPlay(filePath, start, duration, playerCallBack);
         });
         thread.start();
     }
 
 
-    private void read(String filePath, Long start, Long duration, PlayerCallBack playerCallBack) {
+    public void syncPlay(String filePath, Long start, Long duration, PlayerCallBack playerCallBack) {
         final File file = new File(filePath);
         try {
             final AudioInputStream in = AudioSystem.getAudioInputStream(file);
             AudioFormat inFormat = getConvertOutFormat(in.getFormat());
-            playerCallBack.onReadFormat(inFormat);
+            long frameLength = in.getFrameLength();
+            playerCallBack.onReadFormat(inFormat, frameLength);
             AudioInputStream inputStream = AudioSystem.getAudioInputStream(inFormat, in);
 
             final int sampleSizePreFrame = inFormat.getChannels() * inFormat.getSampleSizeInBits() / 8;

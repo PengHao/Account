@@ -15,6 +15,10 @@ public interface LibraryManager {
 
     List<MetadataDO> getMetadataFromTarget(Long targetId);
 
+    MetadataDO getMetadata(Long metadataId);
+
+    FileDO getFile(Long fileId);
+
     CoverDO getCover(Long coverId);
 
     CoverDO getCoverOfFile(Long fileId);
