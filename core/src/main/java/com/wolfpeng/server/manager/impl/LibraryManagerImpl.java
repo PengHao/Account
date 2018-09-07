@@ -17,6 +17,7 @@ import com.wolfpeng.model.MetadataDO;
 import com.wolfpeng.server.manager.LibraryManager;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Created by penghao on 2018/8/31.
@@ -58,9 +59,15 @@ public class LibraryManagerImpl implements LibraryManager {
         return metadataDOs;
     }
 
+
     @Override
     public CoverDO getCover(Long coverId) {
         return coverDAO.queryCoverDO(coverId);
+    }
+
+    @Override
+    public CoverDO getCoverOfFile(Long fileId) {
+        return coverDAO.queryCoverDOByFileId(fileId);
     }
 
     @Override
@@ -106,6 +113,7 @@ public class LibraryManagerImpl implements LibraryManager {
         Long coverId = null;
         CoverDO coverDO = fileMeta.getCover();
         if (coverDO != null) {
+            coverDO.setFileId(fileDO.getId());
             coverDAO.insertCoverDO(coverDO);
             coverId = coverDO.getId();
         }
@@ -115,6 +123,9 @@ public class LibraryManagerImpl implements LibraryManager {
             for (MetadataDO metadataDO : metadataDOs) {
                 if (coverId != null) {
                     metadataDO.setCoverId(coverId);
+                }
+                if (StringUtils.isEmpty(metadataDO.getAblum())) {
+                    metadataDO.setAblum(fileDO.getName());
                 }
                 metadataDO.setTargetId(fileId);
                 metadataDAO.insertMetadataDO(metadataDO);

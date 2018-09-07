@@ -17,6 +17,8 @@ public interface LibraryManager {
 
     CoverDO getCover(Long coverId);
 
+    CoverDO getCoverOfFile(Long fileId);
+
     void addFile(FileDO fileDO);
 
     void addMetadata(MetadataDO metadataDO);

@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class CoverDO extends BaseDO {
     String path;
+    Long fileId;
 
     byte[] data;
 }
@@ -22,7 +23,9 @@ CREATE TABLE `cover` (
      `status` tinyint NOT NULL COMMENT '-1:删除， 1:有效',
     `data` mediumblob,
     `path` TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `file_id` bigint unsigned NOT NULL COMMENT '文件id',
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `file_id` (`file_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 **/

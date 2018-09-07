@@ -9,7 +9,7 @@
         <result property="createTime" column="create_time" />
         <result property="modifyTime" column="modify_time" />
         <result property="status" column="status" />
-
+        <result property="fileId" column="file_id" />
         <result property="path" column="path" />
         <result property="data" column="data" />
     </resultMap>
@@ -20,6 +20,14 @@
         select * from cover where id = #{0}
     </select>
 
+    <select id="queryCoverDOByFileId"
+            parameterType="java.lang.Long"
+            resultMap="coverDOMap">
+        select * from cover where file_id = #{0}
+    </select>
+
+
+
     <insert
             id="insertCoverDO"
             keyProperty="id"
@@ -28,7 +36,7 @@
             flushCache="true"
             statementType="PREPARED"
             timeout="20">
-      insert into cover (create_time, modify_time, status, path, data) values (now(), now(), 0, #{path}, #{data})
+      insert into cover (create_time, modify_time, status, path, data, file_id) values (now(), now(), 0, #{path}, #{data}, #{fileId})
     </insert>
 
     <update
@@ -56,6 +64,7 @@
         <if test="status != null">, status = #{status}</if>
         <if test="data != null">, data = #{data}</if>
         <if test="path != null">, path = #{path}</if>
+        <if test="fileId != null">, file_id = #{fileId}</if>
         where id = #{id}
     </update>
 

@@ -43,6 +43,24 @@
         select * from metadata where target_id = #{0}
     </select>
 
+
+    <select id="queryFile"
+            resultMap="metadataDOMap">
+        select target_id from metadata GROUP by target_id
+    </select>
+
+
+    <select id="queryArtist"
+            resultMap="metadataDOMap">
+        select ablum, cover_id, target_id, artist from metadata GROUP by ablum
+    </select>
+
+
+    <select id="queryAblume"
+            resultMap="metadataDOMap">
+        select ablum, cover_id, target_id from metadata GROUP by ablum
+    </select>
+
     <insert
             id="insertMetadataDO"
             keyProperty="id"

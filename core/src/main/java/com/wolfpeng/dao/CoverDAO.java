@@ -10,6 +10,7 @@ import com.wolfpeng.model.UserDO;
 public interface CoverDAO  {
 
     CoverDO queryCoverDO(Long id);
+    CoverDO queryCoverDOByFileId(Long fileId);
 
     void insertCoverDO(CoverDO coverDO);
 

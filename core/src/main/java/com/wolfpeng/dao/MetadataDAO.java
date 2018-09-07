@@ -14,6 +14,8 @@ public interface MetadataDAO {
 
     List<MetadataDO> queryMetadataDOByTargetId(Long targetId);
 
+    List<MetadataDO> queryAblume();
+
     void insertMetadataDO(MetadataDO userDO);
 
     void updateMetadataDO(MetadataDO userDO);
